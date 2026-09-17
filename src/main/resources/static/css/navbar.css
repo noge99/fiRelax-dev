@@ -1,0 +1,45 @@
+.custom-navbar {
+    background-color: #a9121e;
+}
+
+.custom-navbar .nav-link,
+.custom-navbar .navbar-brand {
+    color: #ffffff;
+    font-size: medium;
+}
+
+.custom-navbar .dropdown-item {
+    color: #000000; /* Set dropdown item font color to black */
+    font-size: medium;
+}
+
+.custom-navbar .nav-link.active,
+.custom-navbar .nav-link:active {
+    color: indianred;
+}
+
+.custom-navbar .dropdown-item.active,
+.custom-navbar .dropdown-item:active {
+    color: indianred;
+}
+
+.custom-navbar .nav-link:hover,
+.custom-navbar .dropdown-item:hover {
+    color: indianred;
+}
+
+.custom-navbar .dropdown-menu {
+    background-color: #ffffff !important; /* Ensure dropdown has a white background */
+}
+
+
+.custom-navbar .dropdown-menu .navbar-brand {
+    display: flex;
+    justify-content: center; /* Center-align the navbar-brand */
+    color: #000000; /* Set dropdown brand color to black */
+    width: 100%; /* Ensure it takes the full width of the dropdown */
+}
+
+.custom-navbar .navbar-collapse {
+    justify-content: space-between;
+}

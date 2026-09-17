@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{default}">
+<head>
+    <meta charset="UTF-8" />
+    <title>firelax - Welcome</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@docsearch/css@3">
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="container">
+        <section class="py-5 text-center bg-danger-subtle container">
+            <div class="row py-lg-5">
+                <div class="col-lg-6 col-md-8 mx-auto">
+                    <h1 class="display-5 fw-bold">Welcome to fiRelax</h1>
+                    <p class="lead text-body-secondary">the open-source fitting environment for relaxometry analysis</p>
+                </div>
+            </div>
+        </section>
+
+        <div class="container py-5">
+            <!--            <h2 class="display-4 fst-italic">Title of a longer featured blog post</h2>-->
+            <p class="fs-4">Fitting software with user-friendly graphical interface, that allow one to analyze Nuclear-Magnetic-Dispersion profiles using defined relaxation model. More about the models you may find <a href="https://sites.google.com/tecnico.ulisboa.pt/nmrdpedia/home">here</a>. This service was developed and is maintained within the <a href="https://fcrelax.cerm.unifi.it/">FC-RELAX Doctoral Network.</a></p>
+        </div>
+
+        <div class="container py-4">
+            <h2 class="pb-4 mb-4 text-center fst-italic border-bottom">
+                What's new?
+            </h2>
+
+            <div class="accordion" id="changelogAccordion">
+
+                <!-- Article: Version 1.0.2 - May 14 -->
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="heading-102a">
+                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-102a" aria-expanded="true" aria-controls="collapse-102a">
+                            Version 1.0.2 – May 14, 2025
+                        </button>
+                    </h2>
+                    <div id="collapse-102a" class="accordion-collapse collapse show" aria-labelledby="heading-102a" data-bs-parent="#changelogAccordion">
+                        <div class="accordion-body">
+                            <p>New selectable units for 'r' parameter. m - meters; Å - Ångstrom</p>
+                            <hr>
+                            <p>Working alpha release to test for authorized users</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Article: Version 1.0.2 - April 30 -->
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="heading-102b">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-102b" aria-expanded="false" aria-controls="collapse-102b">
+                            Version 1.0.2 – April 30, 2025
+                        </button>
+                    </h2>
+                    <div id="collapse-102b" class="accordion-collapse collapse" aria-labelledby="heading-102b" data-bs-parent="#changelogAccordion">
+                        <div class="accordion-body">
+                            <p>New default values added to inner-sphere parameters</p>
+                            <hr>
+                            <p>System parameters set to 'Fix' as default</p>
+                            <hr>
+                            <p>Unit selection for Delta2 parameter fixed</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Article: Version 1.0.1 -->
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="heading-101">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-101" aria-expanded="false" aria-controls="collapse-101">
+                            Version 1.0.1 – April 17, 2025
+                        </button>
+                    </h2>
+                    <div id="collapse-101" class="accordion-collapse collapse" aria-labelledby="heading-101" data-bs-parent="#changelogAccordion">
+                        <div class="accordion-body">
+                            <p>Logout button added to end session</p>
+                            <hr>
+                            <p>Minor bugs fixed</p>
+                            <hr>
+                            <p>Working alpha release to test for authorized users</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Article: Version 1.0.0 -->
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="heading-100">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-100" aria-expanded="false" aria-controls="collapse-100">
+                            Version 1.0.0 – April 8, 2025
+                        </button>
+                    </h2>
+                    <div id="collapse-100" class="accordion-collapse collapse" aria-labelledby="heading-100" data-bs-parent="#changelogAccordion">
+                        <div class="accordion-body">
+                            <p>Working alpha release to test for authorized users</p>
+                            <hr>
+                            <p>Default values for water solvent and text input field included</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Article: Version 0.9.1 -->
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="heading-091">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-091" aria-expanded="false" aria-controls="collapse-091">
+                            Version 0.9.1 – March 28, 2025
+                        </button>
+                    </h2>
+                    <div id="collapse-091" class="accordion-collapse collapse" aria-labelledby="heading-091" data-bs-parent="#changelogAccordion">
+                        <div class="accordion-body">
+                            <p>Trial version for internal testing purposes only</p>
+                            <hr>
+                            <p>Absolute path used for saving json files</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+
+    </div>
+</div>
+</body>
+</html>

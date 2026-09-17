@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{default}">
+
+<head>
+    <title>Florence model - Independent fit</title>
+</head>
+
+<body>
+<div layout:fragment="content">
+
+    <div class="container-fluid">
+        <div class="tabs-container">
+            <ul class="nav nav-tabs" id="myTab" role="tablist">
+                <li class="nav-item">
+                    <span class="tab-close-btn" data-tab="1">&times;</span>
+                    <a class="nav-link active" id="profile1-tab" data-toggle="tab" href="#profile1" role="tab" aria-controls="profile1" aria-selected="true">
+                        <div class="tab-title">
+                            <span id="profile1-name" class="tab-name">Profile 1</span>
+                            <span class="editable-profile-name" data-profile="profile1">Edit</span>
+                            <div class="dropdown-label">
+                                <select class="custom-select">
+                                    <option value="R1" selected>R1</option>
+                                    <option value="R2">R2</option>
+                                </select>
+                            </div>
+                            <input type="text" class="form-control additional-input" placeholder="T">
+                        </div>
+                    </a>
+                </li>
+                <li class="nav-item" id="add-tab-container">
+                    <a class="nav-link disabled" href="#" id="add-tab" aria-disabled="true">+</a>
+                </li>
+            </ul>
+            <div class="tab-content" id="myTabContent">
+                <div class="tab-pane fade show active" id="profile1" role="tabpanel" aria-labelledby="profile1-tab">
+                    <div class="d-flex align-items-center" style="gap: 12px;">
+                        <button class="btn btn-sm btn-info toggle-parameters" data-profile="profile1">Hide System Parameters</button>
+
+                        <div class="btn-group btn-group-sm" role="group" aria-label="ZFS symmetry">
+                            <input type="radio" class="btn-check" name="zfsSymmetry-profile1" id="zfs-none-profile1" value="none" autocomplete="off">
+                            <label class="btn btn-outline-secondary" for="zfs-none-profile1">None</label>
+
+                            <input type="radio" class="btn-check" name="zfsSymmetry-profile1" id="zfs-axial-profile1" value="axial" autocomplete="off" checked>
+                            <label class="btn btn-outline-secondary" for="zfs-axial-profile1">Axial</label>
+
+                            <input type="radio" class="btn-check" name="zfsSymmetry-profile1" id="zfs-rhombic-profile1" value="rhombic" autocomplete="off">
+                            <label class="btn btn-outline-secondary" for="zfs-rhombic-profile1">Rhombic</label>
+                        </div>
+
+                        <div class="fit-quality ms-2 d-none" id="fit-quality-profile1"></div>
+
+                        <div class="axis-scale ms-2 d-none" id="axis-scale-profile1"></div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-between align-items-start mt-3">
+            <div class="text-center">
+                <button id="submit-button" class="btn btn-outline-success btn-lg" type="button">Submit</button>
+                <button id="fit-button" class="btn btn-warning btn-lg" type="button">Fit</button>
+                <div class="btn-group btn-group-lg" role="group" aria-label="Plot actions">
+                    <button id="plot-button" class="btn btn-danger" type="button">Plot</button>
+                    <button id="close-plot" class="btn btn-secondary" type="button">X</button>
+                    <button id="switch-plot" class="btn btn-outline-secondary" type="button" disabled>C</button>
+                </div>
+            </div>
+            <div class="d-flex justify-content-start mt-2" style="gap: 12px;">
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" id="simp-check" checked disabled>
+                    <label class="form-check-label" for="simp-check">simp</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" id="scan-check" checked>
+                    <label class="form-check-label" for="scan-check">scan</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" id="min-check" checked>
+                    <label class="form-check-label" for="min-check">min</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" id="minos-check" >
+                    <label class="form-check-label" for="minos-check">minos</label>
+                </div>
+            </div>
+<!--            <div class="d-flex">-->
+<!--                <div class="toggle-buttons-container mr-3">-->
+<!--                    <p class="small-text mb-1">Individual fit</p>-->
+<!--                    <div class="btn-group-vertical" role="group">-->
+<!--                        <input type="radio" class="btn-check no-circle" name="fitToggle" id="correlated" onclick="window.location='/paramagnetic-correlated';" autocomplete="off">-->
+<!--                        <label class="btn btn-sm btn-outline-primary" for="correlated">Correlated</label>-->
+
+<!--                        <input type="radio" class="btn-check no-circle" name="fitToggle" id="independent" autocomplete="off" checked>-->
+<!--                        <label class="btn btn-sm btn-outline-primary" for="independent">Independent</label>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--                <div class="toggle-buttons-container">-->
+<!--                    <p class="small-text mb-1">Arrhenius fit</p>-->
+<!--                    <div class="btn-group-vertical" role="group">-->
+<!--                        <input type="radio" class="btn-check no-circle" name="fitToggle" id="arrhenius" onclick="window.location='/paramagnetic-arrhenius';" autocomplete="off">-->
+<!--                        <label class="btn btn-sm btn-outline-primary" for="arrhenius">Arrhenius</label>-->
+<!--                    </div>-->
+<!--            </div>-->
+        </div>
+
+    </div>
+
+    <!-- Global Fit Spinner Overlay -->
+    <div id="fit-spinner-overlay"
+         class="position-fixed top-0 start-0 w-100 h-100 justify-content-center align-items-center d-none"
+         style="background-color: rgba(255, 255, 255, 0.8); z-index: 2000;">
+        <div class="text-center">
+            <div class="spinner-border text-primary" style="width: 5rem; height: 5rem;" role="status"></div>
+            <div class="mt-3 fs-5 fw-semibold text-primary">Fitting in progress...</div>
+            <button id="cancel-fit-button" class="btn btn-outline-danger mt-3" type="button">Cancel</button>
+        </div>
+    </div>
+
+
+
+    <div class="toast" id="maxTabsToast" style="position: absolute; top: 20px; right: 20px;">
+        <div class="toast-header">
+            <strong class="mr-auto text-primary">Notice</strong>
+            <button type="button" class="ml-2 mb-1 close" data-dismiss="toast">></button>
+        </div>
+        <div class="toast-body">
+            Maximum number of tabs reached.
+        </div>
+    </div>
+
+    <div class="toast" id="lastTabToast" style="position: absolute; top: 20px; right: 20px;">
+        <div class="toast-header">
+            <strong class="mr-auto text-primary">Notice</strong>
+            <button type="button" class="ml-2 mb-1 close" data-dismiss="toast"></button>
+        </div>
+        <div class="toast-body">
+            You cannot delete the last remaining tab.
+        </div>
+    </div>
+
+    <script src="/js/jquery-3.3.1.min.js" type="text/javascript"></script>
+    <script src="/js/popper.min.js" type="text/javascript"></script>
+    <script src="/js/bootstrap-4.3.1/bootstrap.bundle.js" type="text/javascript" ></script>
+    <script src="/js/bootstrap.min.js" type="text/javascript" ></script>
+    <script src="/js/bootstrap.bundle.js" type="text/javascript" ></script>
+
+    <script src="/js/plotly.min.js"></script>
+    <script src="/js/paramag_florence_indie.js"></script>
+
+    <link rel="stylesheet" href="/css/tabUI.css">
+
+</div>
+</body>
+</html>

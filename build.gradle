@@ -1,0 +1,47 @@
+plugins {
+	id 'java'
+	id 'war'
+	id 'org.springframework.boot' version '3.5.14'
+	id 'io.spring.dependency-management' version '1.1.7'
+}
+
+group = 'com'
+version = 'dev'
+
+java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(21)
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+ext {
+	set('springShellVersion', "3.4.2")
+}
+
+dependencies {
+//	implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
+//	implementation 'org.springframework.boot:spring-boot-starter-security'
+	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+	implementation 'nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect'
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework.shell:spring-shell-starter'
+//	implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
+	providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'org.springframework.shell:spring-shell-starter-test'
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+dependencyManagement {
+	imports {
+		mavenBom "org.springframework.shell:spring-shell-dependencies:${springShellVersion}"
+	}
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}

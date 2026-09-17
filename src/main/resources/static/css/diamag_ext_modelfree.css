@@ -1,0 +1,96 @@
+/* === Extended Model-Free — fully self-contained layout =====================
+   Scoped to #modelfreeApp. No dependency on UI_arrhenius.css whatsoever.
+   ID specificity (0,1,1) beats any arrhenius class rule (0,0,1).           */
+
+/* Parameter row */
+#modelfreeApp .parameter-input {
+    display: flex;
+    align-items: center;
+    flex-wrap: nowrap;
+    gap: 0;
+    overflow: visible;
+    position: relative;
+    z-index: 1;
+}
+
+#modelfreeApp .parameter-input.z-top {
+    z-index: 1000;
+}
+
+/* Input group */
+#modelfreeApp .parameter-input .input-group {
+    display: inline-flex;
+    flex: 0 0 auto;
+    width: auto;
+    margin-right: 0;
+}
+
+/* Parameter name label */
+#modelfreeApp .parameter-input .input-group-text:first-child {
+    flex: 0 0 80px;
+    min-width: 80px;
+    justify-content: center;
+    text-align: center;
+}
+
+/* Fix/Free switch cell */
+#modelfreeApp .parameter-input .switch-cell {
+    flex: 0 0 92px;
+    min-width: 92px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Numeric fields */
+#modelfreeApp .parameter-input .form-control.param-value,
+#modelfreeApp .parameter-input .form-control.param-error,
+#modelfreeApp .parameter-input .form-control.param-min,
+#modelfreeApp .parameter-input .form-control.param-max {
+    flex: 0 0 18ch;
+    max-width: 18ch;
+    font-variant-numeric: tabular-nums;
+    text-align: center;
+}
+
+/* Text cells height */
+#modelfreeApp .parameter-input .input-group-text {
+    height: calc(2.25rem);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Dropdown menus above everything */
+#modelfreeApp .parameter-input .param-label-dropdown .dropdown-menu {
+    position: absolute;
+    z-index: 9999;
+}
+
+/* Profile layout */
+#modelfreeApp .profile-flex {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+}
+
+/* Parameters column: size to content */
+#modelfreeApp .parameters-container {
+    flex: none;
+    min-width: 0;
+    width: auto;
+}
+
+/* Plot column: take remaining space */
+#modelfreeApp .plots-container {
+    flex: 1 1 0;
+    min-width: 0;
+    overflow: hidden;
+    position: relative;
+    z-index: 0;
+}
+
+@media (max-width: 1200px) {
+    #modelfreeApp .profile-flex    { flex-direction: column; }
+    #modelfreeApp .plots-container { margin-top: 8px; }
+}

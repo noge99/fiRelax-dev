@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html  xmlns="http://www.w3.org/1999/xhtml"
+       xmlns:th="http://www.thymeleaf.org"
+       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+    <script src="/js/bootstrap.min.js" type="text/javascript" ></script>
+    <script src="/js/bootstrap.bundle.js" type="text/javascript" ></script>
+    <script src="/js/bootstrap-4.3.1/bootstrap.bundle.js" type="text/javascript"></script>
+    <script src="/js/jquery-3.3.1.min.js" type="text/javascript"></script>
+    <script src="/js/popper.min.js" type="text/javascript"></script>
+
+    <link rel="stylesheet" href="/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="/css/navbar.css">
+    <link rel="stylesheet" href="/css/tabUI.css">
+    <link rel="stylesheet" href="/css/UI_arrhenius.css">
+    <link rel="shortcut icon" type="image/png" href="/assets/favicon.ico">
+
+
+</head>
+<body>
+<nav class="navbar navbar-expand-lg custom-navbar">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="/index" style="font-size: large">fiRelax</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link" aria-current="page" href="/">Home</a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Diamagnetic system
+                    </a>
+                    <ul class="dropdown-menu custom-navbar">
+                        <li><a class="dropdown-item" href="/diamagnetic-modelfree">Extended Model-Free Approach</a></li>
+                    </ul>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Paramagnetic system
+                    </a>
+                    <ul class="dropdown-menu custom-navbar">
+                        <li><a class="dropdown-item" href="/paramagnetic-correlated">SBM+Freed</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="/florence-indie">Florence</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="/modflorence-indie">modified Florence</a></li>
+                    </ul>
+                </li>
+                <li class="nav-item dropdown d-none">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" disabled>
+                        Superparamagnetic system
+                    </a>
+                    <ul class="dropdown-menu custom-navbar">
+                        <li><a class="dropdown-item" href="#">Action</a></li>
+                        <li><a class="dropdown-item" href="#">Another action</a></li>
+                    </ul>
+                </li>
+            </ul>
+            <form class="d-flex ms-auto" role="form" th:action="@{/logout}" method="post">
+                <button class="btn btn-dark" type="button" id="export-button">Export</button>
+                <button class="btn btn-dark" type="submit">Logout</button>
+            </form>
+        </div>
+    </div>
+</nav>
+<!--    </div>-->
+<div class="container-fluid">
+    <br />
+    <div layout:fragment="content"></div>
+
+</div>
+</body>
+
+</html>

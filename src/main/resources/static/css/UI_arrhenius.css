@@ -1,0 +1,130 @@
+/* === Arrhenius parameter layout — compact with balanced 5px gaps === */
+
+.parameter-input {
+    display: flex;
+    align-items: center;
+    flex-wrap: nowrap;
+    gap: 0;
+    overflow: visible !important;
+}
+
+/* When a label dropdown is open, bring that entire row above the others */
+.parameter-input.z-top {
+    z-index: 1000 !important;
+}
+
+
+/* Input group: shrink to content width */
+.parameter-input .input-group {
+    display: inline-flex;
+    flex: 0 0 auto;
+    width: auto !important;
+    margin-right: 0;
+}
+
+/* Uniform parameter name width */
+.parameter-input .input-group-text:first-child {
+    flex: 0 0 80px;
+    min-width: 80px;
+    justify-content: center;
+    text-align: center;
+}
+
+/* Fixed Fix/Free switch cell width */
+.parameter-input .switch-cell {
+    flex: 0 0 92px;
+    min-width: 92px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Numeric field widths (~10 digits) */
+.parameter-input .form-control.param-value,
+.parameter-input .form-control.param-error,
+.parameter-input .form-control.param-min,
+.parameter-input .form-control.param-max {
+    flex: 0 0 18ch;
+    max-width: 18ch;
+    font-variant-numeric: tabular-nums;
+    text-align: center;
+}
+
+/* 5px gap between input group and Shared checkbox */
+.parameter-input .form-check-input.shared-checkbox {
+    margin-left: 5px !important;
+    margin-right: 5px !important; /* 5px gap before label */
+}
+
+/* Remove Bootstrap default spacing for inline form-check */
+.parameter-input .form-check.form-check-inline {
+    margin: 0 !important;
+    padding: 0 !important;
+    display: inline-flex;
+    align-items: center;
+}
+
+.parameter-input select.narrow-select {
+    margin-left: 6px !important;
+    height: calc(2.25rem);
+    width: auto !important;
+    min-width: 80px;         /* same as parameter label width */
+    max-width: 100px;        /* prevent it from stretching too much */
+    padding-right: 1.5rem;   /* space for dropdown arrow */
+    text-align: center;
+}
+
+/* Ensure dropdown menus appear on top of input groups */
+.parameter-input .param-label-dropdown .dropdown-menu {
+    position: absolute;
+    z-index: 9999 !important;
+}
+
+
+
+/* Normalize heights for text cells */
+.parameter-input .input-group-text {
+    height: calc(2.25rem);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Container for params + plot */
+.profile-flex {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+}
+
+/* Let both columns share space without overflow */
+.parameters-container { flex: 1 1 0; min-width: 360px; }
+.plots-container      { flex: 1 1 0; min-width: 360px; overflow: hidden; position: relative; }
+
+/* Make the plot fill its container instead of fixed px */
+.plot-host {
+    width: 100% !important;
+    height: 650px;           /* keep your tall plot, but responsive width */
+}
+
+/* Ensure Plotly canvas stays behind row controls */
+.parameter-input { position: relative; z-index: 1; }
+.plots-container { z-index: 0; }
+
+/* Tighter, predictable spacing for the inline controls */
+.parameter-input .form-check.form-check-inline { margin-left: 6px !important; }
+.parameter-input select.narrow-select         { margin-left: 8px !important; }
+
+/* Stack vertically on narrower screens */
+@media (max-width: 1200px) {
+    .profile-flex { flex-direction: column; }
+    .plots-container { margin-top: 8px; }
+    .plot-host { height: 520px; }
+}
+
+/* === Arrhenius-only layout tuning === */
+#arrheniusTab #myTabContent {
+    flex-basis: 60%;
+}
+
+

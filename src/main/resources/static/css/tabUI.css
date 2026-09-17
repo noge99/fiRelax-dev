@@ -1,0 +1,392 @@
+/*.container {*/
+/*    margin-left: 5px;*/
+/*    width: 100%; !* Maintain full width *!*/
+/*    max-width: 100%; !* Prevent exceeding the window size *!*/
+/*    padding-left: 0;*/
+/*    resize: horizontal; !* Allow horizontal resizing *!*/
+/*    overflow: auto; !* Allow scroll if resized smaller than content *!*/
+/*}*/
+
+.container-fluid {
+    width: 100%; /* Ensure it stretches the full width */
+}
+
+
+.tabs-container {
+    display: flex;
+    width: 100%; /* Ensure full width */
+    /*justify-content: space-between;*/
+    overflow: auto; /* Add scrolling if needed */
+}
+
+.plot-host {
+    width: 100% !important;
+    height: 650px;           /* keep your tall plot, but responsive width */
+}
+
+#plots-container {
+    flex-basis: 60%; /* Plot container takes up the remaining 60% */
+    padding: 50px 20px 20px 20px; /* Adjust for padding */
+    min-width: 300px; /* Minimum width for responsiveness */
+    width: auto;
+}
+
+
+#corrTab #myTabContent {
+    flex-basis: 60%; /* Restrict tab content width */
+}
+
+#indieTab #myTabContent {
+    flex-basis: 60%; /* Restrict tab content width */
+}
+
+#plot {
+    width: auto;  /* Fixed width */
+    height: 650px; /* Fixed height */
+    overflow: auto;
+}
+
+/* Ensure the tab list uses minimal width */
+.nav.nav-tabs {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;      /* Stack tabs neatly to the left */
+    width: auto;                  /* Shrink to fit content */
+    max-width: 250px;             /* Optional: limit max width if needed */
+    padding-left: 5px;            /* Minimal left padding */
+    margin: 0;                    /* Remove outer margins */
+}
+
+.tab-content {
+    display: block;
+}
+
+.tab-pane {
+    padding: 10px;
+}
+
+.tab-close-btn {
+    color: red;
+    cursor: pointer;
+    font-weight: bold;
+    /*margin-right: 10px;*/
+    margin: 0 2px 0 0 !important; /* Tighten spacing */
+    font-size: 14px;
+    line-height: 1;
+}
+
+
+
+/* Remove gap between close button and the rest of the tab */
+.nav-item {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;  /* Align everything to the left */
+    gap: 2px;                     /* Tiny gap, no large space */
+    width: 100%;
+    padding: 0;
+    margin: 0;
+}
+
+/* Compact tab link to remove unnecessary width */
+.nav-link {
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+    padding: 2px 5px;             /* Smaller padding */
+    width: auto;
+    margin: 0;
+    font-size: 0.8rem;
+    white-space: nowrap;
+}
+
+/* Remove excess space inside the tab title */
+.tab-title {
+    display: flex;
+    align-items: center;
+    margin: 0;
+    padding: 0;
+    gap: 3px;                     /* Tiny, consistent spacing between elements */
+}
+
+.dropdown-label {
+    margin-left: 5px;
+}
+
+.additional-input {
+    width: 35px;
+    margin-right: 6px;                /* pull slightly away from the edge */
+    margin-left: 0 !important; /* Remove left space next to dropdown */
+    /*margin-left: 5px;*/
+    padding: 2px 4px;          /* Compact input */
+
+}
+
+.editable-profile-name {
+    margin-left: 5px;
+    font-size: small;
+    cursor: pointer;
+    color: blue;
+}
+
+.custom-select {
+    width: 70px;
+    font-size: small;
+}
+
+.parameter-input {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.parameter-input .parameter-name {
+    width: 50px;
+    text-align: right;
+    margin-right: 10px;
+}
+
+.parameter-input .fix-free-buttons {
+    display: flex;
+    align-items: center;
+    margin-right: 10px;
+}
+
+.parameter-input .fix-free-buttons .form-check {
+    margin-right: 5px;
+}
+
+.parameter-input input[type="text"] {
+    width: 150px;
+    font-size: small;
+}
+
+.parameter-input .narrow-select {
+    width: auto;
+    font-size: small;
+    padding: 0.375rem 0.75rem;
+}
+
+/* Ensure dropdown menus appear on top of input groups */
+.parameter-input .param-label-dropdown .dropdown-menu {
+    position: absolute;
+    z-index: 9999 !important;
+}
+
+.parameter-input .delta-unit-select,
+.parameter-input .r-unit-select {
+    width: 60px;
+    font-size: small;
+}
+
+.parameter-input .a-unit-select {
+    width: 60px;
+    font-size: small;
+}
+
+#add-tab {
+    position: static;           /* remove absolute positioning so it stays in flow */
+    width: 100%;
+    text-align: center;
+    font-size: 20px;
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-top: none;
+    padding: 3px 0;
+    color: #007bff;
+    cursor: pointer;
+}
+
+#add-tab:hover {
+    background-color: #e9ecef;
+}
+
+
+.resizable-input {
+    resize: both;
+    overflow: auto;
+    width: 5%;
+}
+
+.parameter-input .narrow-select {
+    width: auto;
+    font-size: small;
+    padding: 0.375rem 0.75rem;
+    color: #6c757d;
+    background-color: #e2e6ea;
+    border-color: #dae0e5;
+    border-radius: 0.25rem;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+}
+
+.parameter-input .narrow-select:focus {
+    color: #6c757d;
+    background-color: #e2e6ea;
+    border-color: #adb5bd;
+    outline: 0;
+    box-shadow: 0 0 0 0.2rem rgba(108, 117, 125, 0.25);
+}
+.toggle-buttons-container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start; /* Align to the left */
+    font-size: small;
+    padding: 5px;
+    border: 1px solid #ddd; /* Border around the container */
+    border-radius: 5px;
+    width: fit-content; /* Adjust the width to fit the content */
+}
+
+.toggle-buttons-container .btn-group-vertical {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start; /* Align to the left */
+    margin-top: 5px; /* Margin to separate from Individual fit text */
+}
+
+.toggle-buttons-container p {
+    margin: 0;
+    font-size: small;
+    text-align: left; /* Align to the left */
+    margin-bottom: 5px; /* Add margin to the bottom of the text */
+}
+
+/* Hide the small circle of the radio buttons */
+.btn-check {
+    position: absolute;
+    clip: rect(0, 0, 0, 0);
+    pointer-events: none;
+}
+
+.btn-check + .btn {
+    font-size: small; /* Match the button size with the other elements */
+}
+
+.btn-check:checked + .btn,
+.btn-check:focus + .btn {
+    background-color: #007bff;
+    color: white;
+}
+
+.btn-check:checked + .btn {
+    box-shadow: inset 0 0.25rem 0.5rem rgba(0, 0, 0, 0.1);
+}
+
+.accordion {
+    /*margin-top: 20px;*/
+    width: 30%; /* Reduce width of the accordion */
+}
+
+textarea.form-control.narrow-input {
+    width: 90%; /* Reduce the width of the text input field */
+    max-width: 90%; /* Ensure it doesn’t expand beyond this */
+}
+
+
+
+/*.btn-group .btn, .btn-group .custom-select {*/
+/*    height: 38px; !* Adjust the height to match the buttons *!*/
+/*}*/
+
+.custom-select.light-yellow {
+    background-color: #fff9c4; /* Light yellow background color */
+    border-color: #ffc107; /* Match the border color of the Fit button */
+}
+
+/* Shared input: full width below the two-column block */
+#shared-accordion { width: 100% ;}
+#shared-accordion textarea.narrow-input { width: 95%; max-width: 95%; }
+
+#indieTab .profile-flex,
+#corrTab #myTabContent .profile-flex {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+}
+
+
+#corrTab #myTabContent .plots-container{
+    /*flex: 1 1 0;*/
+    min-width: 360px;
+    overflow: hidden;
+    position: relative;
+}
+
+@media (max-width: 1200px) {
+    #corrTab .profile-flex,
+    #indieTab .profile-flex {
+        flex-direction: column;
+    }
+
+    #corrTab .plots-container,
+    #indieTab .plots-container {
+        margin-top: 8px;
+    }
+}
+
+.fit-quality table {
+    border-collapse: collapse;
+    font-size: 0.85rem;
+}
+
+.fit-quality td {
+    padding: 2px 6px;
+    white-space: nowrap;
+}
+
+.fit-quality td.label {
+    font-weight: 600;
+}
+
+.axis-scale {
+    font-size: 0.85rem;
+    white-space: nowrap;
+}
+
+.axis-scale .form-check {
+    margin-bottom: 0;
+}
+
+.fit-quality table { border-collapse: collapse; font-size: 0.85rem; }
+.fit-quality td { padding: 2px 6px; white-space: nowrap; }
+.fit-quality td.label { font-weight: 600; }
+
+.axis-scale { font-size: 0.85rem; white-space: nowrap; }
+.axis-scale .form-check { margin-bottom: 0; }
+
+/* axis switch row: keep everything on one line */
+.axis-scale > div {
+    flex-wrap: nowrap;
+}
+
+.axis-scale > div > div {
+    flex-wrap: nowrap;
+}
+
+
+/* header row inside each tab */
+.tab-controls-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: nowrap;   /* keep items on one line */
+    white-space: nowrap; /* prevent text from wrapping inside */
+}
+
+/* prevent children from shrinking or wrapping to new lines */
+.tab-controls-row > * {
+    flex: 0 0 auto;
+}
+
+/* make the χ²/R² box and axis-scale behave as single-line inline flex blocks */
+.tab-controls-row .fit-quality,
+.tab-controls-row .axis-scale {
+    display: inline-flex;
+    align-items: center;
+}
+
+
+
+

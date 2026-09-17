@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{default}">
+<head>
+    <meta charset="UTF-8" />
+    <title>firelax - Welcome</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@docsearch/css@3">
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="container">
+        <section class="py-6 container bg-white" style="border: 5px solid #a9121e;">
+            <div class="row py-3 align-items-center">
+                <div class="col-md-4 mb-4 mb-md-0 text-md-start">
+                    <div class="p-3 bg-white">
+                        <img src="/images/logo.png"
+                             alt="fiRelax logo"
+                             class="img-fluid">
+                    </div>
+                </div>
+
+                <!-- Right: title + subtitle -->
+                <div class="col-md-8 text-center text-md-start">
+                    <h1 class="display-5 fw-bold">Welcome to fiRelax</h1>
+                    <p class="lead text-body-secondary">
+                        the open-source fitting environment for relaxometry analysis
+                    </p>
+                </div>
+            </div>
+        </section>
+
+
+        <div class="container py-5">
+            <!--            <h2 class="display-4 fst-italic">Title of a longer featured blog post</h2>-->
+            <p class="fs-4">Fitting software with user-friendly graphical interface, that allow one to analyze Nuclear-Magnetic-Dispersion profiles using defined relaxation model. More about the models you may find <a href="https://sites.google.com/tecnico.ulisboa.pt/nmrdpedia/home">here</a>. This service was developed and is maintained within the <a href="https://fcrelax.cerm.unifi.it/">FC-RELAX Doctoral Network.</a></p>
+        </div>
+
+        <div class="container py-4">
+            <h2 class="pb-4 mb-4 text-center fst-italic border-bottom">
+                What's new?
+            </h2>
+
+            <div class="row">
+                <div class="col">
+                    <div class="accordion w-100" id="changelogAccordion">
+                        <div class="accordion-item" style="width: 100%;">
+                            <h2 class="accordion-header" id="heading-11">
+                                <button class="accordion-button fw-bold fs-5" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-11" aria-expanded="true" aria-controls="collapse-11">
+                                    Version 1.1
+                                </button>
+                            </h2>
+                            <div id="collapse-11" class="accordion-collapse collapse show" aria-labelledby="heading-11" data-bs-parent="#changelogAccordion">
+                                <div class="accordion-body">
+                                    <p>May 22, 2025</p>
+                                    <hr>
+                                    <p>Default values for 'mix' and 'max' added</p>
+                                    <hr>
+                                    <p>Mainpage - UI updated</p>
+                                    <hr>
+                                    <p>Trial version for internal testing purposes only</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-item" style="width: 100%;">
+                            <h2 class="accordion-header" id="heading-103">
+                                <button class="accordion-button fw-bold fs-5 collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-103" aria-expanded="false" aria-controls="collapse-103">
+                                    1.0.3
+                                </button>
+                            </h2>
+                            <div id="collapse-103" class="accordion-collapse collapse" aria-labelledby="heading-103" data-bs-parent="#changelogAccordion">
+                                <div class="accordion-body">
+                                    <p>May 14, 2025</p>
+                                    <hr>
+                                    <p>New selectable units for 'r' parameter. m - meters; Å - Ångstrom</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion-item" style="width: 100%;">
+                            <h2 class="accordion-header" id="heading-102">
+                                <button class="accordion-button fw-bold fs-5 collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-102" aria-expanded="false" aria-controls="collapse-102">
+                                    1.0.2
+                                </button>
+                            </h2>
+                            <div id="collapse-102" class="accordion-collapse collapse" aria-labelledby="heading-102" data-bs-parent="#changelogAccordion">
+                                <div class="accordion-body">
+                                    <p>April 30, 2025</p>
+                                    <hr>
+                                    <p>New default values added to inner-sphere parameters</p>
+                                    <hr>
+                                    <p>System parameters set to 'Fix' as default</p>
+                                    <hr>
+                                    <p>Unit selection for Delta2 parameter fixed</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion-item" style="width: 100%;">
+                            <h2 class="accordion-header" id="heading-101">
+                                <button class="accordion-button fw-bold fs-5 collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-101" aria-expanded="false" aria-controls="collapse-101">
+                                    1.0.1
+                                </button>
+                            </h2>
+                            <div id="collapse-101" class="accordion-collapse collapse" aria-labelledby="heading-101" data-bs-parent="#changelogAccordion">
+                                <div class="accordion-body">
+                                    <p>April 17, 2025</p>
+                                    <hr>
+                                    <p>Logout button added to end session</p>
+                                    <hr>
+                                    <p>Minor bugs fixed</p>
+                                    <hr>
+                                    <p>Working alpha release to test for authorized users</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion-item" style="width: 100%;">
+                            <h2 class="accordion-header" id="heading-100">
+                                <button class="accordion-button fw-bold fs-5 collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-100" aria-expanded="false" aria-controls="collapse-100">
+                                    1.0
+                                </button>
+                            </h2>
+                            <div id="collapse-100" class="accordion-collapse collapse" aria-labelledby="heading-100" data-bs-parent="#changelogAccordion">
+                                <div class="accordion-body">
+                                    <p>April 8, 2025</p>
+                                    <hr>
+                                    <p>Working alpha release to test for authorized users</p>
+                                    <hr>
+                                    <p>Default values for water solvent and text input field included</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion-item" style="width: 100%;">
+                            <h2 class="accordion-header" id="heading-091">
+                                <button class="accordion-button fw-bold fs-5 collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-091" aria-expanded="false" aria-controls="collapse-091">
+                                    0.9.1
+                                </button>
+                            </h2>
+                            <div id="collapse-091" class="accordion-collapse collapse" aria-labelledby="heading-091" data-bs-parent="#changelogAccordion">
+                                <div class="accordion-body">
+                                    <p>March 28, 2025</p>
+                                    <hr>
+                                    <p>Trial version for internal testing purposes only</p>
+                                    <hr>
+                                    <p>Absolute path used for saving json files</p>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="container py-4">
+            <h2 class="pb-4 mb-4 text-center fst-italic border-bottom">
+                About us
+            </h2>
+            <div class="d-flex flex-column flex-md-row justify-content-between mb-5">
+                <div class="flex-grow-1">
+                    <h3 class="mb-0"><a href="https://linkedin.com/in/adam-kubrak-27796a265">Adam Kubrak</a> | CERM, UNIFI</h3>
+                    <div class="subheading mb-2">Webmaster</div>
+                    <!--                <p>Bring to the table win-win survival strategies to ensure proactive domination. At the end of the day, going forward, a new normal that has evolved from generation X is on the runway heading towards a streamlined cloud solution. User generated content in real-time will have multiple touchpoints for offshoring.</p>-->
+                </div>
+                <div class="flex-shrink-0"><span class="text-primary"><a href="https://cercachi.unifi.it/cercachi-per-23981.html">Contact</a></span></div>
+            </div>
+            <div class="d-flex flex-column flex-md-row justify-content-between mb-5">
+                <div class="flex-grow-1">
+                    <h3 class="mb-0">Pedro Sebastiao | IST</h3>
+                    <div class="subheading mb-2">Fitting Engine Developer (<a href="https://github.com/fitteia/OneFit-Engine">OneFit-E</a>)</div>
+                    <!--                <p>Capitalize on low hanging fruit to identify a ballpark value added activity to beta test. Override the digital divide with additional clickthroughs from DevOps. Nanotechnology immersion along the information highway will close the loop on focusing solely on the bottom line.</p>-->
+                </div>
+                <div class="flex-shrink-0"><span class="text-primary"><a href="https://fenix.tecnico.ulisboa.pt/homepage/ist12744/apresentacao">Contact</a></span></div>
+            </div>
+            <div class="d-flex flex-column flex-md-row justify-content-between mb-5">
+                <div class="flex-grow-1">
+                    <h3 class="mb-0">Giacomo Parigi | CERM, UNIFI</h3>
+                    <div class="subheading mb-3">FC-RELAX Project Coordinator</div>
+                    <!--                <p>Capitalize on low hanging fruit to identify a ballpark value added activity to beta test. Override the digital divide with additional clickthroughs from DevOps. Nanotechnology immersion along the information highway will close the loop on focusing solely on the bottom line.</p>-->
+                </div>
+                <!--            <div class="flex-shrink-0"><span class="text-primary"><a href="#">Contact</a></span></div>-->
+            </div>
+            <div class="d-flex flex-column flex-md-row justify-content-between mb-5">
+                <div class="flex-grow-1">
+                    <h3 class="mb-0">Enrico Morelli | CERM</h3>
+                    <div class="subheading mb-3">System Administrator</div>
+                    <!--                <p>Capitalize on low hanging fruit to identify a ballpark value added activity to beta test. Override the digital divide with additional clickthroughs from DevOps. Nanotechnology immersion along the information highway will close the loop on focusing solely on the bottom line.</p>-->
+                </div>
+                <!--            <div class="flex-shrink-0"><span class="text-primary"><a href="#">Contact</a></span></div>-->
+            </div>
+        </div>
+        <div class="container">
+            <div class="row">
+                <div class="container py-4">
+                    <h2 class="pb-4 mb-4 text-center fst-italic border-bottom">
+                        Cooperation between
+                    </h2>
+                </div>
+                <div class="col-lg-4">
+                    <div style="width: 140px; height: 140px; border-radius: 50%; overflow: hidden; display: flex; justify-content: center; align-items: center;">
+                        <img src="/images/cerm.gif" width="90" height="90" style="object-fit: contain;">
+                    </div>
+                    <h2 class="fw-normal">Magnetic Resonance Center (CERM)</h2>
+                    <p><a class="btn btn-secondary" href="https://www.cerm.unifi.it/">View details &raquo;</a></p>
+                </div>
+                <div class="col-lg-4">
+                    <img src="/images/ist.png" class="rounded-circle" width="140" height="140">
+                    <h2 class="fw-normal">Instituto Superior Tecnico (IST)</h2>
+                    <p><a class="btn btn-secondary" href="https://tecnico.ulisboa.pt/en/">View details &raquo;</a></p>
+                </div>
+                <div class="col-lg-4">
+                    <img src="/images/unifi.gif" class="rounded-circle" width="140" height="140">
+                    <h2 class="fw-normal">Università degli Studi di Firenze (UNIFI)</h2>
+                    <p><a class="btn btn-secondary" href="https://www.unifi.it/en">View details &raquo;</a></p>
+                </div>
+            </div>
+        </div>
+
+
+
+        <footer class="text-body-secondary bg-body-secondary py-5">
+            <div class="container">
+                <div class="row mb-4">
+                    <div class="col-md-2">
+                        <div class="mb-4">
+                            <img src="/images/EU.png" width="150" height="150">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-4 mt-2">
+                            <p>This project has received funding from the EU’s Horizon Europe programme under the Marie Skłodowska-Curie grant agreement No 101072758.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="mb-4 mt-2">
+                            <a href="https://fcrelax.cerm.unifi.it/"><img src="/images/fc-relax-logo.jpg" width="140" height="140"></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <p>Copyright © 2025 FC-RELAX - All rights reserved - Powered by <a href="#" target="new">Adam Kubrak</a> using Bootstrap</p>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </div>
+</div>
+</body>
+</html>
