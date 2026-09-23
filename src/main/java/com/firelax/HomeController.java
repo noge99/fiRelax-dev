@@ -860,6 +860,210 @@ public class HomeController {
         return jsonBuilder.toString();
     }
 
+
+    @PostMapping("/saveTabData_florence_svante")
+    @ResponseBody
+    public ResponseEntity<Map<String, String>> saveTabData_florence_svante(@RequestBody Map<String, Object> data) {
+        String jsonDir = "/home/ofe/public_html/json/";
+        File directory = new File(jsonDir);
+        if (!directory.exists()) directory.mkdirs();
+
+        // FLAG logic kept: florence -> 1, modflorence -> 2
+        // FLAG index taken from labels (26, or 25 when D discrete removes DDM)
+        String variant   = String.valueOf(data.getOrDefault("Variant", "florence"));
+        String modelFlag = "modflorence".equals(variant) ? "2" : "1";
+        String[] labelArr = String.valueOf(data.getOrDefault("ParametersString", "")).split(",");
+        for (int i = 0; i < labelArr.length; i++) {
+            if ("FLAG".equals(labelArr[i].trim())) {
+                data.put("F" + i, "Fix");
+                data.put("Pval" + i, modelFlag);
+                data.put("Pmin" + i, "");
+                data.put("Pmax" + i, "");
+                break;
+            }
+        }
+
+        // *_florence_arrh.json (must not end with _arrhenius.json -> would collide with svante)
+        final String fileSuffix = "_" + variant + "_svante.json";
+
+        File[] existing = directory.listFiles((dir, name) -> name.endsWith(fileSuffix));
+        if (existing != null && existing.length > 0) {
+            Arrays.sort(existing, Comparator.comparingLong(File::lastModified));
+            existing[0].delete();
+        }
+
+        String timestamp = new SimpleDateFormat("yyyyMMdd_HHmm").format(new Date());
+        String jsonFileName = timestamp + fileSuffix;
+        String jsonFilePath = jsonDir + jsonFileName;
+
+        try (FileWriter file = new FileWriter(jsonFilePath)) {
+            file.write(generateJSON_florence_svante(data));
+            return ResponseEntity.ok(Map.of("message", "Florence Arrhenius data saved successfully.", "filename", jsonFileName));
+        } catch (IOException e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body(Map.of("message", "Failed to save Florence Arrhenius data."));
+        }
+    }
+
+    private String generateJSON_florence_svante(Map<String, Object> data) {
+        StringBuilder jsonBuilder = new StringBuilder("{\n");
+
+        String parametersStr = String.valueOf(data.getOrDefault("ParametersString", ""));
+
+        Set<Integer> sharedFixIndices = new HashSet<>();
+        if (!parametersStr.isEmpty()) {
+            String[] paramLabels = parametersStr.split(",");
+            for (int pi = 0; pi < paramLabels.length; pi++) {
+                if (paramLabels[pi].trim().endsWith("_")) {
+                    sharedFixIndices.add(pi);
+                }
+            }
+        }
+
+        int k = 0;
+        while (data.containsKey("F"+k) || data.containsKey("Pval"+k) || data.containsKey("Pmin"+k) || data.containsKey("Pmax"+k)) {
+            String fValK    = String.valueOf(data.getOrDefault("F"+k, ""));
+            boolean isFixK  = "Fix".equalsIgnoreCase(fValK);
+            boolean suppressBounds = isFixK && !sharedFixIndices.contains(k);
+            jsonBuilder.append("\"F").append(k).append("\": \"").append(fValK).append("\",\n");
+            jsonBuilder.append("\"Pval").append(k).append("\": \"").append(String.valueOf(data.getOrDefault("Pval"+k, ""))).append("\",\n");
+            jsonBuilder.append("\"Pmin").append(k).append("\": \"").append(suppressBounds ? "" : String.valueOf(data.getOrDefault("Pmin"+k, ""))).append("\",\n");
+            jsonBuilder.append("\"Pmax").append(k).append("\": \"").append(suppressBounds ? "" : String.valueOf(data.getOrDefault("Pmax"+k, ""))).append("\",\n");
+            k++;
+        }
+
+        jsonBuilder.append("\"Traco0\": \"3-dashed\",\n");
+        jsonBuilder.append("\"X\": \"f\",\n");
+        jsonBuilder.append("\"Xmax\": \"1e+08\",\n");
+        jsonBuilder.append("\"Xmin\": \"6000\",\n");
+        jsonBuilder.append("\"Y\": \"R1\",\n");
+        jsonBuilder.append("\"Ymax\": \"50\",\n");
+        jsonBuilder.append("\"Ymin\": \"0\",\n");
+        jsonBuilder.append("\"FitType\": \"Individual\",\n");
+        jsonBuilder.append("\"Func0\": \"\",\n");
+        jsonBuilder.append("\"AscaleX\": \"yes\",\n");
+        jsonBuilder.append("\"AscaleY\": \"yes\",\n");
+        jsonBuilder.append("\"Cor0\": \"2-red\",\n");
+        jsonBuilder.append("\"FitMethods\": \"simp scan min minos\",\n");
+        jsonBuilder.append("\"Funcx0\": \"auto\",\n");
+        jsonBuilder.append("\"Funcy0\": \"auto\",\n");
+        jsonBuilder.append("\"T\": \"N\",\n");
+
+        boolean ls  = Boolean.parseBoolean(String.valueOf(data.getOrDefault("ModelFree", "false")));
+        boolean os  = Boolean.parseBoolean(String.valueOf(data.getOrDefault("OuterSphere", "false")));
+        boolean ss  = Boolean.parseBoolean(String.valueOf(data.getOrDefault("SecondSphere", "false")));
+        boolean dDiscrete = os && "Y".equals(String.valueOf(data.getOrDefault("Dmode", "X")));
+
+        String caseKey = "FLORENCE"
+                + (ls ? "+LS" : "")
+                + (os ? "+FREED" : "")
+                + (ss ? "+SS" : "")
+                + (dDiscrete ? "+DDISCRETE" : "");
+
+        jsonBuilder.append("\"Parameters\": \"").append(parametersStr).append("\",\n");
+
+        switch (caseKey) {
+            case "FLORENCE": // 1. Florence
+                jsonBuilder.append("\"Function\": \"R1=TO BE ADDED, FLORENCE\",\n");
+                jsonBuilder.append("\"AuxCode\": \"TO BE ADDED, FLORENCE,;\\r\\n}\",\n");
+                jsonBuilder.append("\"AuxDeclar\": \"TO BE ADDED, FLORENCE,;\\r\\n}\",\n");
+                break;
+            case "FLORENCE+FREED": // 2. Florence + Freed
+                jsonBuilder.append("\"Function\": \"R1=TO BE ADDED, FLORENCE+FREED\",\n");
+                jsonBuilder.append("\"AuxCode\": \"TO BE ADDED, FLORENCE+FREED,;\\r\\n}\",\n");
+                jsonBuilder.append("\"AuxDeclar\": \"TO BE ADDED, FLORENCE+FREED,;\\r\\n}\",\n");
+                break;
+            case "FLORENCE+LS": // 3. Florence + Lipari-Szabo
+                jsonBuilder.append("\"Function\": \"R1=TO BE ADDED, FLORENCE+LS\",\n");
+                jsonBuilder.append("\"AuxCode\": \"TO BE ADDED, FLORENCE+LS,;\\r\\n}\",\n");
+                jsonBuilder.append("\"AuxDeclar\": \"TO BE ADDED, FLORENCE+LS,;\\r\\n}\",\n");
+                break;
+            case "FLORENCE+LS+FREED": // 4. Florence + Lipari-Szabo + Freed
+                jsonBuilder.append("\"Function\": \"R1=TO BE ADDED, FLORENCE+LS+FREED\",\n");
+                jsonBuilder.append("\"AuxCode\": \"TO BE ADDED, FLORENCE+LS+FREED,;\\r\\n}\",\n");
+                jsonBuilder.append("\"AuxDeclar\": \"TO BE ADDED, FLORENCE+LS+FREED,;\\r\\n}\",\n");
+                break;
+            case "FLORENCE+SS": // 5. Florence + SS
+                jsonBuilder.append("\"Function\": \"R1=TO BE ADDED, FLORENCE+SS\",\n");
+                jsonBuilder.append("\"AuxCode\": \"TO BE ADDED, FLORENCE+SS,;\\r\\n}\",\n");
+                jsonBuilder.append("\"AuxDeclar\": \"TO BE ADDED, FLORENCE+SS,;\\r\\n}\",\n");
+                break;
+            case "FLORENCE+FREED+SS": // 6. Florence + Freed + SS
+                jsonBuilder.append("\"Function\": \"R1=TO BE ADDED, FLORENCE+FREED+SS\",\n");
+                jsonBuilder.append("\"AuxCode\": \"TO BE ADDED, FLORENCE+FREED+SS,;\\r\\n}\",\n");
+                jsonBuilder.append("\"AuxDeclar\": \"TO BE ADDED, FLORENCE+FREED+SS,;\\r\\n}\",\n");
+                break;
+            case "FLORENCE+LS+SS": // 7. Florence + Lipari-Szabo + SS
+                jsonBuilder.append("\"Function\": \"R1=TO BE ADDED, FLORENCE+LS+SS\",\n");
+                jsonBuilder.append("\"AuxCode\": \"TO BE ADDED, FLORENCE+LS+SS,;\\r\\n}\",\n");
+                jsonBuilder.append("\"AuxDeclar\": \"TO BE ADDED, FLORENCE+LS+SS,;\\r\\n}\",\n");
+                break;
+            case "FLORENCE+LS+FREED+SS": // 8. Florence + Lipari-Szabo + Freed + SS
+                jsonBuilder.append("\"Function\": \"R1=TO BE ADDED, FLORENCE+LS+FREED+SS\",\n");
+                jsonBuilder.append("\"AuxCode\": \"TO BE ADDED, FLORENCE+LS+FREED+SS,;\\r\\n}\",\n");
+                jsonBuilder.append("\"AuxDeclar\": \"TO BE ADDED, FLORENCE+LS+FREED+SS,;\\r\\n}\",\n");
+                break;
+            case "FLORENCE+FREED+DDISCRETE": // 9. Florence + Freed (D discrete)
+                jsonBuilder.append("\"Function\": \"R1=TO BE ADDED, FLORENCE+FREED+DDISCRETE\",\n");
+                jsonBuilder.append("\"AuxCode\": \"TO BE ADDED, FLORENCE+FREED+DDISCRETE,;\\r\\n}\",\n");
+                jsonBuilder.append("\"AuxDeclar\": \"TO BE ADDED, FLORENCE+FREED+DDISCRETE,;\\r\\n}\",\n");
+                break;
+            case "FLORENCE+LS+FREED+DDISCRETE": // 10. Florence + Lipari-Szabo + Freed (D discrete)
+                jsonBuilder.append("\"Function\": \"R1=TO BE ADDED, FLORENCE+LS+FREED+DDISCRETE\",\n");
+                jsonBuilder.append("\"AuxCode\": \"TO BE ADDED, FLORENCE+LS+FREED+DDISCRETE,;\\r\\n}\",\n");
+                jsonBuilder.append("\"AuxDeclar\": \"TO BE ADDED, FLORENCE+LS+FREED+DDISCRETE,;\\r\\n}\",\n");
+                break;
+            case "FLORENCE+LS+FREED+SS+DDISCRETE": // 11. Florence + Lipari-Szabo + Freed + SS (D discrete)
+                jsonBuilder.append("\"Function\": \"R1=TO BE ADDED, FLORENCE+LS+FREED+SS+DDISCRETE\",\n");
+                jsonBuilder.append("\"AuxCode\": \"TO BE ADDED, FLORENCE+LS+FREED+SS+DDISCRETE,;\\r\\n}\",\n");
+                jsonBuilder.append("\"AuxDeclar\": \"TO BE ADDED, FLORENCE+LS+FREED+SS+DDISCRETE,;\\r\\n}\",\n");
+                break;
+            case "FLORENCE+FREED+SS+DDISCRETE": // 12. Florence + Freed + SS (D discrete) -- not in your list
+                jsonBuilder.append("\"Function\": \"R1=TO BE ADDED, FLORENCE+FREED+SS+DDISCRETE\",\n");
+                jsonBuilder.append("\"AuxCode\": \"TO BE ADDED, FLORENCE+FREED+SS+DDISCRETE,;\\r\\n}\",\n");
+                jsonBuilder.append("\"AuxDeclar\": \"TO BE ADDED, FLORENCE+FREED+SS+DDISCRETE,;\\r\\n}\",\n");
+                break;
+            default:
+                throw new IllegalStateException("Unhandled Florence Arrhenius case: " + caseKey);
+        }
+
+        String dados = data.get("dados") != null ? data.get("dados").toString() : "";
+        dados = dados.replace("\r\n", "\n").replace("\r", "\n");
+
+        jsonBuilder.append("\"Dados\": \"")
+                .append(dados
+                        .replace("\\", "\\\\")
+                        .replace("\"", "\\\"")
+                        .replace("\n", "\\n"))
+                .append("\",\n");
+
+        List<String> tabs = new ArrayList<>();
+        Object maybeArray = data.get("AllTabs");
+        if (maybeArray instanceof List) {
+            for (Object o : (List<?>) maybeArray) {
+                if (o != null) tabs.add(String.valueOf(o));
+            }
+        }
+
+        jsonBuilder.append("\"Tags\": [\n");
+        for (int i = 0; i < tabs.size(); i++) {
+            jsonBuilder.append("  \"")
+                    .append(tabs.get(i).replace("\\", "\\\\").replace("\"", "\\\""))
+                    .append("\"");
+            if (i < tabs.size() - 1) jsonBuilder.append(",");
+            jsonBuilder.append("\n");
+        }
+        jsonBuilder.append("],\n");
+
+        String active = String.valueOf(data.getOrDefault("ActiveTab", ""));
+        jsonBuilder.append("\"SelectedDataSet\": \"")
+                .append(active.replace("\\", "\\\\").replace("\"", "\\\""))
+                .append("\"\n");
+
+        jsonBuilder.append("}\n");
+        return jsonBuilder.toString();
+    }
+
     @PostMapping("/saveTabData_modelfree")
     @ResponseBody
     public ResponseEntity<Map<String, String>> saveTabData_modelfree(
@@ -1028,6 +1232,11 @@ public class HomeController {
     @GetMapping("/florence-indie")
     public String paramag_florence_indie(Model model) {
         return "paramag_florence_indie";
+    }
+
+    @GetMapping("/florence-arrhenius")
+    public String paramag_florence_arrhenius(Model model) {
+        return "paramag_florence_arrhenius";
     }
 
     @GetMapping("/modflorence-indie")
