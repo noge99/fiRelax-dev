@@ -18,9 +18,6 @@ $(document).ready(function () {
         { name: "tm", long: "Lifetime of the water molecule in contact", placeholder: "Unit: s" },
         { name: "tR", long: "Rotational correlation time of the m-q*water aggregate", placeholder: "Unit: s" },
         { name: "tv", long: "Electron relaxation correlation time", placeholder: "Unit: s" },
-        { name: 'Em', long: 'Activation energy for tm', placeholder: 'Activation energy for τₘ; Unit:(J/mol)/R' },
-        { name: 'ER', long: 'Activation energy for tr', placeholder: 'Activation energy for τᵣ; Unit:(J/mol)/R' },
-        { name: 'Ev', long: 'Activation energy for tv', placeholder: 'Activation energy for τᵥ; Unit:(J/mol)/R' },
         { name: "Delta2", long: "Transient ZFS", placeholder: "Unit: s-2 or cm-1" },
     ];
 
@@ -133,25 +130,19 @@ $(document).ready(function () {
 
         // MAIN PARAMETERS --------------------------------------------------------
         const parametersContainer = $(`#${profileId}-parameters`);
-        const SHARED_PAR = ['q', 'r', 'Delta2', 'Aoh', 'a', 'SLS', 'thetam'];
+        const SHARED_PAR = ['q', 'r', 'tm', 'tR', 'tv', 'Delta2', 'Aoh', 'a', 'SLS', 'thetam'];
 
         parameters.forEach((param, index) => {
 
             const minDefault =
                 param.name === 'tm' ? 1e-11 :
                     param.name === 'tv' ? 1e-14 :
-                        param.name === 'tR' ? 1e-10 :
-                            param.name === 'Em' ? 1e3 :
-                                param.name === 'ER' ? 1e3 :
-                                    param.name === 'Ev' ? 1e3 : '';
+                        param.name === 'tR' ? 1e-10 : '';
 
             const maxDefault =
                 param.name === 'tm' ? 1e-6 :
                     param.name === 'tv' ? 1e-9 :
-                        param.name === 'tR' ? 1e-5 :
-                            param.name === 'Em' ? 1e4 :
-                                param.name === 'ER' ? 1e4 :
-                                    param.name === 'Ev' ? 1e4 : '';
+                        param.name === 'tR' ? 1e-5 : '';
 
             const valueDefault =
                 param.name === 'q' ? 1 :
@@ -162,10 +153,7 @@ $(document).ready(function () {
                                     param.name === 'tm' ? 1e-9 :
                                         param.name === 'tR' ? 1e-8 :
                                             param.name === 'tv' ? 1e-11 :
-                                                param.name === 'Em' ? 2e3 :
-                                                    param.name === 'ER' ? 3e3 :
-                                                        param.name === 'Ev' ? 5e3 :
-                                                            param.name === 'Delta2' ? 0.03 : '';
+                                                param.name === 'Delta2' ? 0.03 : '';
 
             const sharedCheckbox = SHARED_PAR.includes(param.name)
                 ? `
@@ -182,9 +170,7 @@ $(document).ready(function () {
             else if (param.name === 'tm') uiName = 'τ<sub>m</sub>';
             else if (param.name === 'tR') uiName = 'τ<sub>R</sub>';
             else if (param.name === 'tv') uiName = 'τ<sub>v</sub>';
-            else if (param.name === 'Em') uiName = 'E<sub>m</sub>';
-            else if (param.name === 'ER') uiName = 'E<sub>R</sub>';
-            else if (param.name === 'Ev') uiName = 'E<sub>v</sub>';
+
 
             let labelHTML;
 
@@ -332,6 +318,10 @@ $(document).ready(function () {
                     <input type="text" class="form-control param-min" placeholder="min">
                     <input type="text" class="form-control param-max" placeholder="max">
                 </div>
+                <div class="form-check form-check-inline ms-1">
+                    <input class="form-check-input shared-checkbox" type="checkbox" id="${profileId}-q2-shared" data-param="q2">
+                    <label class="form-check-label" for="${profileId}-q2-shared">Shared</label>
+                </div>
             </div>
 
             <div class="parameter-input mb-3" data-param="tm2">
@@ -351,26 +341,12 @@ $(document).ready(function () {
                     <input type="text" class="form-control param-min" placeholder="min" value="1e-11">
                     <input type="text" class="form-control param-max" placeholder="max" value="1e-6">
                 </div>
-            </div>
-
-            <div class="parameter-input mb-3" data-param="Em2">
-                <div class="input-group">
-                    <span class="input-group-text">E<sub>m</sub></span>
-
-                    <span class="input-group-text p-0 switch-cell">
-                        <div class="form-check form-switch ms-2 me-2 my-1">
-                            <input class="form-check-input fix-free-switch" type="checkbox" role="switch"
-                                   id="switchEm2-${profileId}" checked>
-                            <label class="form-check-label ms-2" for="switchEm2-${profileId}">Free</label>
-                        </div>
-                    </span>
-
-                    <input type="text" class="form-control param-value" title="Activation energy for τₘ (second sphere); Unit:(J/mol)/R" placeholder="Activation energy for τₘ (second sphere)" value="2e3">
-                    <input type="text" class="form-control param-error" readonly placeholder="Error">
-                    <input type="text" class="form-control param-min" placeholder="min" value="1e3">
-                    <input type="text" class="form-control param-max" placeholder="max" value="1e4">
+                <div class="form-check form-check-inline ms-1">
+                    <input class="form-check-input shared-checkbox" type="checkbox" id="${profileId}-tm2-shared" data-param="tm2">
+                    <label class="form-check-label" for="${profileId}-tm2-shared">Shared</label>
                 </div>
             </div>
+
 
             <div class="parameter-input mb-3" data-param="r2">
                 <div class="input-group">
@@ -398,8 +374,13 @@ $(document).ready(function () {
                     <input type="text" class="form-control param-min" placeholder="min">
                     <input type="text" class="form-control param-max" placeholder="max">
                 </div>
+                <div class="form-check form-check-inline ms-1">
+                    <input class="form-check-input shared-checkbox" type="checkbox" id="${profileId}-r2-shared" data-param="r2">
+                    <label class="form-check-label" for="${profileId}-r2-shared">Shared</label>
+                </div>
             </div>
         `);
+            applySharedStateToProfile(profileId);
         });
 
 
@@ -448,6 +429,10 @@ $(document).ready(function () {
                     <input type="text" class="form-control param-error" readonly placeholder="Error">
                     <input type="text" class="form-control param-min" placeholder="min">
                     <input type="text" class="form-control param-max" placeholder="max" >
+                </div>
+                <div class="form-check form-check-inline ms-1">
+                    <input class="form-check-input shared-checkbox" type="checkbox" id="${profileId}-D-shared" data-param="D">
+                    <label class="form-check-label" for="${profileId}-D-shared">Shared</label>
                 </div>
 
 
@@ -587,22 +572,6 @@ $(document).ready(function () {
                     <input type="text" class="form-control param-max" value="1e-6" placeholder="max">
                 </div>
             </div>           
-            <div class="parameter-input mb-3" data-param="El">
-                <div class="input-group">
-                    <span class="input-group-text">E<sub>l</sub></span>
-                    <span class="input-group-text p-0 switch-cell">
-                        <div class="form-check form-switch ms-2 me-2 my-1">
-                            <input class="form-check-input fix-free-switch" type="checkbox" role="switch"
-                                   id="switchEl-${profileId}" checked>
-                            <label class="form-check-label ms-2" for="switchEl-${profileId}">Free</label>
-                        </div>
-                    </span>
-                    <input type="text" class="form-control param-value" title="Activation energy for τₗ; Unit:(J/mol)/R" placeholder="Activation energy for τₗ">
-                    <input type="text" class="form-control param-error" placeholder="Error" readonly>
-                    <input type="text" class="form-control param-min" placeholder="min" value="1e3">
-                    <input type="text" class="form-control param-max" placeholder="max" value="1e4">
-                </div>
-            </div>
             `);
             applySharedStateToProfile(profileId);
         });
@@ -887,15 +856,6 @@ $(document).ready(function () {
 
     $('.tabs-container').after(sharedAccordion);
 
-    const $svanteTableWrapper = $(`
-      <div id="svante-table-wrapper" style="width:50%; margin-top:12px; display:none;">
-        <div id="svante-table-container"></div>
-      </div>`);
-
-    $('<div id="svante-two-col" class="d-flex align-items-start w-100"></div>')
-        .insertAfter('.tabs-container');
-    $('#svante-two-col').append($('#shared-accordion-wrapper')).append($svanteTableWrapper);
-
     function updateSharedTextarea() {
         const $textarea = $('#shared-textarea');
         if ($textarea.length === 0) return;
@@ -1026,10 +986,10 @@ $(document).ready(function () {
     const TWO_PI_c = 2 * 29979245800 * Math.PI;
 
 
-    function saveParams_FlorenceSvante(isPlot = false) {
+    function saveParams_FlorenceHybrid(isPlot = false) {
         const profileId = $('#myTabContent .tab-pane.active').attr('id');
         if (!profileId) {
-            console.warn('[florence-arrhenius] No active tab found.');
+            console.warn('[florence-hybrid] No active tab found.');
             return Promise.reject('No active tab');
         }
 
@@ -1038,56 +998,51 @@ $(document).ready(function () {
         const isSecondSphereChecked = $(`#secondSphereCheckbox-${profileId}`).is(':checked');
         const isDdiscrete           = isOuterSphereChecked && DmodeState.D === "Y";
 
-        // Parameter order: Florence (+ Arrhenius) > Lipari-Szabo > SS
+        // Parameter order: Florence > Lipari-Szabo > SS
         const ORDER = [
             { label: "SI",       ui: "SI",          group: "hyperfine" },  // 0
             { label: "GAMMAI",   ui: "gammaI" },                           // 1
             { label: "SPIN",     ui: "S" },                                // 2
             { label: "DELTA2",   ui: "Delta2" },                           // 3
-            { label: "TAURMref", ui: "tR", energy: "ER", always: true },   // 4
-            { label: "TAUVMref", ui: "tv", energy: "Ev", always: true },   // 5
-            { label: "TAUMMref", ui: "tm", energy: "Em", always: true },   // 6
-            { label: "ERM",      ui: "ER", always: true },                 // 7
-            { label: "EVM",      ui: "Ev", always: true },                 // 8
-            { label: "EMM",      ui: "Em", always: true },                 // 9
-            { label: "DPARAM",   ui: "dparam",      group: "static" },     // 10
-            { label: "EPARAM",   ui: "eparam",      group: "static" },     // 11
-            { label: "GXM",      ui: ["gx", "gxy"], group: "gtensor" },    // 12
-            { label: "GYM",      ui: ["gy", "gxy"], group: "gtensor" },    // 13 (axial: gxy)
-            { label: "GZM",      ui: "gz",          group: "gtensor" },    // 14
-            { label: "AXM",      ui: ["Ax", "Axy"], group: "hyperfine" },  // 15
-            { label: "AYM",      ui: ["Ay", "Axy"], group: "hyperfine" },  // 16 (axial: Axy)
-            { label: "AZM",      ui: "Az",          group: "hyperfine" },  // 17
-            { label: "CONCM",    ui: "C" },                                // 18
-            { label: "RKM",      ui: "r" },                                // 19
-            { label: "DM",       ui: "a" },                                // 20
-            { label: "DDM",      ui: "D" },                                // 21
-            { label: "ACONTM",   ui: "Aoh" },                              // 22
-            { label: "AMOLFRAM", ui: "q" },                                // 23
-            { label: "THETAM",   ui: "thetam",      group: "angles" },     // 24
-            { label: "PHIM",     ui: "phim",        group: "angles" },     // 25
-            { label: "FLAG",     special: "flag" },                        // 26 (value set in Java)
-            { label: "Tref",     special: "tref" },                        // 27
-            { label: "FN",       ui: "fn", def: 1 }                        // 28
+            { label: "TAURM",    ui: "tR" },                               // 4
+            { label: "TAUVM",    ui: "tv" },                               // 5
+            { label: "TAUMM",    ui: "tm" },                               // 6
+            { label: "DPARAM",   ui: "dparam",      group: "static" },     // 7
+            { label: "EPARAM",   ui: "eparam",      group: "static" },     // 8
+            { label: "GXM",      ui: ["gx", "gxy"], group: "gtensor" },    // 9
+            { label: "GYM",      ui: ["gy", "gxy"], group: "gtensor" },    // 10 (axial: gxy)
+            { label: "GZM",      ui: "gz",          group: "gtensor" },    // 11
+            { label: "AXM",      ui: ["Ax", "Axy"], group: "hyperfine" },  // 12
+            { label: "AYM",      ui: ["Ay", "Axy"], group: "hyperfine" },  // 13 (axial: Axy)
+            { label: "AZM",      ui: "Az",          group: "hyperfine" },  // 14
+            { label: "CONCM",    ui: "C" },                                // 15
+            { label: "RKM",      ui: "r" },                                // 16
+            { label: "DM",       ui: "a" },                                // 17
+            { label: "DDM",      ui: "D" },                                // 18 (removed when D discrete)
+            { label: "ACONTM",   ui: "Aoh" },                              // 19
+            { label: "AMOLFRAM", ui: "q" },                                // 20
+            { label: "THETAM",   ui: "thetam",      group: "angles" },     // 21
+            { label: "PHIM",     ui: "phim",        group: "angles" },     // 22
+            { label: "FLAG",     special: "flag" },                        // 23 (value set in Java)
+            { label: "FN",       ui: "fn", def: 1 }                        // 24
         ];
 
         if (isModelFreeChecked) {
             ORDER.push(
-                { label: "SLS",      ui: "SLS" },
-                { label: "TAULMref", ui: "tl", energy: "El", always: true },
-                { label: "ELM",      ui: "El", always: true }
+                { label: "SLS",   ui: "SLS" },
+                { label: "TAULM", ui: "tl" }
             );
         }
 
         if (isSecondSphereChecked) {
             ORDER.push(
-                { label: "TAUMMref2", ui: "tm2", energy: "Em2", always: true },
-                { label: "EMM2",      ui: "Em2", always: true },
+                { label: "TAUMM2",    ui: "tm2" },
                 { label: "RKM2",      ui: "r2" },
                 { label: "AMOLFRAM2", ui: "q2" }
             );
         }
 
+        // D discrete: DDM removed, all following indexes shift down by 1
         if (isDdiscrete) {
             ORDER.splice(ORDER.findIndex(s => s.label === "DDM"), 1);
         }
@@ -1144,21 +1099,9 @@ $(document).ready(function () {
             return { F: isFree ? "Free" : "Fix", Pval: conv(v), Pmin: conv(vmin), Pmax: conv(vmax) };
         }
 
-        // energy Fix at 0 -> Arrhenius pair invalid (same rule as svante)
-        function isInvalidArrhenius(energyName) {
-            const $e = $(`#${profileId} .parameter-input[data-param="${energyName}"]`);
-            if (!$e.length) return false;
-            const eFree = $e.find('.fix-free-switch').is(':checked');
-            const eVal  = parseFloat($e.find('.param-value').val());
-            return (!eFree && Number.isFinite(eVal) && eVal === 0);
-        }
-
         const sharedSet = new Set($('.shared-checkbox:checked').map(function () {
             return String($(this).data('param'));
         }).get());
-
-        const trefNum = parseFloat($('#profile1-tab .additional-input').val());
-        const trefVal = Number.isFinite(trefNum) ? trefNum : 298;
 
         const zfsClosed = getZfsClosedMap(profileId);
         const data = {};
@@ -1169,8 +1112,6 @@ $(document).ready(function () {
 
             if (spec.special === "flag") {
                 Pval = "";                                   // overwritten in Java (ModelFlag)
-            } else if (spec.special === "tref") {
-                Pval = trefVal;
             } else if (spec.group && zfsClosed[spec.group]) {
                 Pval = (spec.group === "gtensor") ? 2.0023 : 0;
             } else {
@@ -1179,26 +1120,17 @@ $(document).ready(function () {
                     Pval = (spec.def !== undefined) ? spec.def : 0;
                 } else {
                     const vv = readRow($row);
-                    const uiName = String($row.data('param'));
-                    const uiIsFree = vv.F === "Free";
                     Pval = vv.Pval; Pmin = vv.Pmin; Pmax = vv.Pmax;
+                    F = vv.F;
 
-                    if (spec.energy && isInvalidArrhenius(spec.energy)) {
-                        F = "Fix";
-                        label = uiIsFree ? `${spec.label}_` : spec.label;
-                    } else if (spec.always) {
-                        F = vv.F;
-                    } else if (sharedSet.has(uiName)) {
-                        F = "Free";
-                    } else if (uiIsFree) {
-                        F = "Free";
+                    // _corr rule: shared -> plain label; not shared + Free -> per dataset ("_")
+                    if (!sharedSet.has(String($row.data('param'))) && F === "Free") {
                         label = `${spec.label}_`;
-                    } else {
-                        F = "Fix";
                     }
                 }
             }
 
+            // Plot mode: everything Fix, plain labels
             if (isPlot) {
                 F = "Fix";
                 label = spec.label;
@@ -1214,7 +1146,7 @@ $(document).ready(function () {
         data["Parameters"]       = labels;
         data["ParametersString"] = labels.join(",");
 
-        // ---- Dados: shared textarea, unit pre-scale, "# DATA N= T idx [D]" ----
+        // ---- Dados: shared textarea, unit pre-scale, "# DATA N=idx idx [D]" (as _corr) ----
         const lines = ($('#shared-textarea').val() || "").split(/\r?\n/);
 
         let unitFactor = 1;
@@ -1237,11 +1169,6 @@ $(document).ready(function () {
             return parts.join(" ");
         });
 
-        const temps = $('.nav-tabs .nav-link .additional-input').map(function () {
-            const t = parseFloat($(this).val());
-            return Number.isFinite(t) ? String(t) : "";      // "" keeps tab alignment (null would be dropped)
-        }).get();
-
         const Dvals = $('#myTabContent .tab-pane').map(function () {
             return ($(`#${this.id} .parameter-input[data-param="D"] .param-value`).val() || "").trim();
         }).get();
@@ -1251,10 +1178,9 @@ $(document).ready(function () {
         for (const ln of processedLines) {
             if (ln.startsWith("# TAG")) {
                 counter++;
-                const Tstr = temps[counter - 1] || "";
                 out.push(isDdiscrete
-                    ? `# DATA N= ${Tstr} ${counter} ${Dvals[counter - 1] || ""}`
-                    : `# DATA N= ${Tstr} ${counter}`);
+                    ? `# DATA N=${counter} ${counter} ${Dvals[counter - 1] || ""}`
+                    : `# DATA N=${counter} ${counter}`);
             }
             out.push(ln);
         }
@@ -1277,38 +1203,56 @@ $(document).ready(function () {
 
         return $.ajax({
             type: 'POST',
-            url: `/saveTabData_florence_svante`,
+            url: `/saveTabData_florence_hybrid`,
             data: JSON.stringify(data),
             contentType: 'application/json'
         });
     }
 
-    // =========================================================================
-    // Fit / Plot / Results (same scheme as paramag_arrhenius, Florence labels)
-    // =========================================================================
-
     let __corrLastFitJson = null;
 
-    // Florence backend label -> UI data-param (first existing row wins)
     const FL_LABEL_TO_UI = {
-        SI: ["SI"], GAMMAI: ["gammaI"], SPIN: ["S"], DELTA2: ["Delta2"],
-        TAURMref: ["tR"], TAUVMref: ["tv"], TAUMMref: ["tm"],
-        ERM: ["ER"], EVM: ["Ev"], EMM: ["Em"],
-        DPARAM: ["dparam"], EPARAM: ["eparam"],
-        GXM: ["gx", "gxy"], GYM: ["gy"], GZM: ["gz"],
-        AXM: ["Ax", "Axy"], AYM: ["Ay"], AZM: ["Az"],
-        CONCM: ["C"], RKM: ["r"], DM: ["a"], DDM: ["D"], ACONTM: ["Aoh"], AMOLFRAM: ["q"],
-        THETAM: ["thetam"], PHIM: ["phim"], FN: ["fn"],
-        SLS: ["SLS"], TAULMref: ["tl"], ELM: ["El"],
-        TAUMMref2: ["tm2"], EMM2: ["Em2"], RKM2: ["r2"], AMOLFRAM2: ["q2"]
+        // Florence
+        SI:        "SI",
+        GAMMAI:    "gammaI",
+        SPIN:      "S",
+        DELTA2:    "Delta2",
+        TAURM:     "tR",
+        TAUVM:     "tv",
+        TAUMM:     "tm",
+        DPARAM:    "dparam",
+        EPARAM:    "eparam",
+        GXM:       ["gx", "gxy"],
+        GYM:       "gy",
+        GZM:       "gz",
+        AXM:       ["Ax", "Axy"],
+        AYM:       "Ay",
+        AZM:       "Az",
+        CONCM:     "C",
+        RKM:       "r",
+        DM:        "a",
+        DDM:       "D",
+        ACONTM:    "Aoh",
+        AMOLFRAM:  "q",
+        THETAM:    "thetam",
+        PHIM:      "phim",
+        FN:        "fn",
+
+        // Lipari-Szabo
+        SLS:       "SLS",
+        TAULM:     "tl",
+
+        // Second sphere
+        TAUMM2:    "tm2",
+        RKM2:      "r2",
+        AMOLFRAM2: "q2"
     };
 
     function findUiRowByLabel($tab, label) {
-        const names = FL_LABEL_TO_UI[String(label || '').trim().replace(/_$/, '')];
-        if (!names) return $();
-        for (const n of names) {
-            const $r = $tab.find(`.parameter-input[data-param="${n}"]`).first();
-            if ($r.length) return $r;
+        const key = String(label || '').trim().replace(/_$/, '');
+        for (const name of [].concat(FL_LABEL_TO_UI[key] || [])) {
+            const $row = $tab.find(`.parameter-input[data-param="${name}"]`).first();
+            if ($row.length) return $row;
         }
         return $();
     }
@@ -1317,7 +1261,7 @@ $(document).ready(function () {
         return String($row.find('.param-label-dropdown .dropdown-item.active').first().data('unit') || '');
     }
 
-    // stored (JSON) -> UI value; inverse of readRow() in saveParams_FlorenceSvante
+    // stored (JSON) -> UI value; inverse of readRow() in saveParams_FlorenceHybrid
     function convForUi(paramName, raw, $row) {
         if (raw === '' || raw == null) return '';
         const x = Number(raw);
@@ -1363,7 +1307,7 @@ $(document).ready(function () {
         return n.toExponential(5).replace(/e\+?(-?\d+)/i, 'e$1');
     };
 
-    function updateArrheniusFitQuality(profileId, fitJson, tabIdx) {
+    function updateHybridFitQuality(profileId, fitJson, tabIdx) {
         const fitResults = fitJson && fitJson["fit-results"];
         if (typeof fitResults !== "string") return;
 
@@ -1428,10 +1372,10 @@ $(document).ready(function () {
     }
 
     // fit-results -> errors in every tab
-    function ErrorSvante(fitJson) {
+    function ErrorHybrid(fitJson) {
         const fitResults = fitJson && fitJson['fit-results'];
         if (typeof fitResults !== 'string') {
-            console.warn('[ErrorSvante] No fit-results found.');
+            console.warn('[ErrorHybrid] No fit-results found.');
             return;
         }
 
@@ -1466,94 +1410,6 @@ $(document).ready(function () {
         });
     }
 
-    // Arrhenius results table (τ at each tab temperature, from profile 1 refs)
-    function renderSvanteTable() {
-        const temps = $('.nav-tabs .nav-link .additional-input').map(function () {
-            const t = parseFloat($(this).val());
-            return Number.isFinite(t) ? t : '';
-        }).get().filter(t => t !== '');
-
-        if (!temps.length) return;
-
-        const Tref = temps[0];
-
-        const $p1 = $('#profile1');
-        const readV = (p) => parseFloat($p1.find(`.parameter-input[data-param="${p}"] .param-value`).val());
-
-        const modelFreeActive    = $('#modelFreeCheckbox-profile1').is(':checked');
-        const secondSphereActive = $('#secondSphereCheckbox-profile1').is(':checked');
-
-        const tmref = readV('tm'), trref = readV('tR'), tvref = readV('tv');
-        const Em = readV('Em'), ER = readV('ER'), Ev = readV('Ev');
-        const tlref  = modelFreeActive    ? readV('tl')  : null;
-        const El     = modelFreeActive    ? readV('El')  : null;
-        const tm2ref = secondSphereActive ? readV('tm2') : null;
-        const Em2    = secondSphereActive ? readV('Em2') : null;
-
-        function isInvalidArrhenius(Ename) {
-            const $row = $p1.find(`.parameter-input[data-param="${Ename}"]`);
-            if (!$row.length) return false;
-            const isFreeUI = $row.find('.fix-free-switch').is(':checked');
-            const valNum   = parseFloat($row.find('.param-value').val());
-            return (!isFreeUI && Number.isFinite(valNum) && valNum === 0);
-        }
-
-        const invalid = {
-            tm:  isInvalidArrhenius('Em'),
-            tR:  isInvalidArrhenius('ER'),
-            tv:  isInvalidArrhenius('Ev'),
-            tl:  modelFreeActive    ? isInvalidArrhenius('El')  : false,
-            tm2: secondSphereActive ? isInvalidArrhenius('Em2') : false
-        };
-
-        if (![tmref, trref, tvref, Em, ER, Ev, Tref].every(Number.isFinite)) return;
-
-        const arrh = (tauRef, E, T) => tauRef * Math.exp(E * (1.0 / T - 1.0 / Tref));
-
-        // invalid pair -> per-tab UI value instead of Arrhenius
-        const tauAt = (param, ref, E, idx, T) => {
-            if (invalid[param]) {
-                const v = parseFloat($(`#profile${idx + 1} .parameter-input[data-param="${param}"] .param-value`).val());
-                return Number.isFinite(v) ? v : null;
-            }
-            if (ref == null || E == null || !Number.isFinite(ref) || !Number.isFinite(E)) return '';
-            return arrh(ref, E, T);
-        };
-
-        let html = `
-    <table class="table table-sm table-bordered" id="svante-table" style="border:2px solid #000;">
-      <thead>
-        <tr>
-          <th scope="col">T</th>
-          <th scope="col">tm</th>
-          <th scope="col">tR</th>
-          <th scope="col">tv</th>
-          ${modelFreeActive ? '<th scope="col">tl</th>' : ''}
-          ${secondSphereActive ? '<th scope="col">tm2</th>' : ''}
-        </tr>
-      </thead>
-      <tbody>
-  `;
-
-        temps.forEach((T, idx) => {
-            html += `
-      <tr>
-        <th scope="row">${T}</th>
-        <td>${toExp5(tauAt('tm', tmref, Em, idx, T))}</td>
-        <td>${toExp5(tauAt('tR', trref, ER, idx, T))}</td>
-        <td>${toExp5(tauAt('tv', tvref, Ev, idx, T))}</td>
-        ${modelFreeActive ? `<td>${toExp5(tauAt('tl', tlref, El, idx, T))}</td>` : ''}
-        ${secondSphereActive ? `<td>${toExp5(tauAt('tm2', tm2ref, Em2, idx, T))}</td>` : ''}
-      </tr>
-    `;
-        });
-
-        html += `</tbody></table>`;
-
-        $('#svante-table-container').html(html);
-        $('#svante-table-wrapper').show();
-    }
-
     function missingInputToast(msg, type = "info") {
         const toastEl = document.getElementById("mainToast");
         if (!toastEl) { alert(msg); return; }
@@ -1571,7 +1427,7 @@ $(document).ready(function () {
         $('#myTabContent .tab-pane').each(function () {
             const pid = this.id;
             $(`#${pid}-plots-container`).css('visibility', 'visible');
-            plotNewDataMulti_svante(datasetsArr, curvesArr, pid, mode);
+            plotNewDataMulti_hybrid(datasetsArr, curvesArr, pid, mode);
         });
     }
 
@@ -1617,7 +1473,7 @@ $(document).ready(function () {
     }
 
     // one dataset = one block; y = last numeric value
-    function parseSingleFitCurveBlock_svante(block) {
+    function parseSingleFitCurveBlock_hybrid(block) {
         const out = [];
         for (const raw of block.split('\n')) {
             const trimmed = raw.trim();
@@ -1628,7 +1484,7 @@ $(document).ready(function () {
         return out;
     }
 
-    function normalizeFitCurvesBlocks_svante(fitCurves, mode) {
+    function normalizeFitCurvesBlocks_hybrid(fitCurves, mode) {
         if (!fitCurves) return [];
 
         if (mode === "compare") {
@@ -1647,11 +1503,11 @@ $(document).ready(function () {
 
     function parseMultiFitCurves_corr(fitCurves, mode = "fit") {
         if (mode === "compare") return fitCurves;
-        const blocks = normalizeFitCurvesBlocks_svante(fitCurves, mode);
-        return blocks.map(parseSingleFitCurveBlock_svante);
+        const blocks = normalizeFitCurvesBlocks_hybrid(fitCurves, mode);
+        return blocks.map(parseSingleFitCurveBlock_hybrid);
     }
 
-    function plotNewDataMulti_svante(datasetsArr, curvesArr, activeTabId, mode = "fit") {
+    function plotNewDataMulti_hybrid(datasetsArr, curvesArr, activeTabId, mode = "fit") {
         const traces = [];
         const n = Math.min(
             Array.isArray(datasetsArr) ? datasetsArr.length : 0,
@@ -1707,13 +1563,13 @@ $(document).ready(function () {
         Plotly.react(`${activeTabId}-plot`, traces, layout);
     }
 
-    function svante_plotNormalForActiveTab() {
+    function hybrid_plotNormalForActiveTab() {
         const activeTabId = $('#myTabContent .tab-pane.active').attr('id');
         if (!__corrLastFitJson) { alert('Run Fit first.'); return; }
 
         const datasetsArr = parseDadosforPlot_corr(__corrLastFitJson["Dados"]);
         const curvesArr   = parseMultiFitCurves_corr(__corrLastFitJson["fit-curves"], "fit");
-        plotNewDataMulti_svante(datasetsArr, curvesArr, activeTabId, "fit");
+        plotNewDataMulti_hybrid(datasetsArr, curvesArr, activeTabId, "fit");
     }
 
     function parseFitCurvesISOS(fitCurvesArray) {
@@ -1738,7 +1594,7 @@ $(document).ready(function () {
         return { IS, OS };
     }
 
-    function svante_plotContribForActiveTab() {
+    function hybrid_plotContribForActiveTab() {
         const activeTabId = $('#myTabContent .tab-pane.active').attr('id');
         if (!__corrLastFitJson) { alert('Run Fit first.'); return; }
 
@@ -1747,7 +1603,7 @@ $(document).ready(function () {
         const datasetsArr = parseDadosforPlot_corr(__corrLastFitJson["Dados"]);
         const ds = Array.isArray(datasetsArr) ? (datasetsArr[tabIdx] || datasetsArr[0]) : null;
 
-        const perProfileBlocks = normalizeFitCurvesBlocks_svante(__corrLastFitJson["fit-curves"], "fit");
+        const perProfileBlocks = normalizeFitCurvesBlocks_hybrid(__corrLastFitJson["fit-curves"], "fit");
         const blockForTab = Array.isArray(perProfileBlocks) ? perProfileBlocks[tabIdx] : null;
 
         const { IS, OS } = blockForTab ? parseFitCurvesISOS([blockForTab]) : { IS: [], OS: [] };
@@ -1788,11 +1644,12 @@ $(document).ready(function () {
             .map(id => map[id]);
     }
 
-    function runFlorenceSvanteFit() {
+    function runFlorenceHybridFit() {
+        const hasShared = $('.shared-checkbox:checked').length > 0;   // as _corr: hybrid=yes only with shared params
         return $.ajax({
-            url: '/fit_florence_svante',
+            url: '/fit_florence_hybrid',
             method: 'POST',
-            data: { methods: getCheckedFitMethods(), variant: FLORENCE_VARIANT },
+            data: { methods: getCheckedFitMethods(), variant: FLORENCE_VARIANT, shared: hasShared ? 'yes' : 'no' },
             traditional: true
         });
     }
@@ -1800,15 +1657,15 @@ $(document).ready(function () {
     const setSpin = on => $('#fit-spinner-overlay').toggleClass('d-none', !on).toggleClass('d-flex', on);
     const setDis  = d  => $('#fit-button, #plot-button, #switch-plot, #close-plot').prop('disabled', d);
 
-    $('#submit-button').off('click').on('click', () => saveParams_FlorenceSvante());
+    $('#submit-button').off('click').on('click', () => saveParams_FlorenceHybrid());
 
     $('#fit-button').off('click').on('click', function () {
-        console.log('[FIT] Saving UI to *_svante.json, then running /fit_florence_svante ...');
+        console.log('[FIT] Saving UI to *_hybrid.json, then running /fit_florence_hybrid ...');
         setDis(true);
         setSpin(true);
 
-        saveParams_FlorenceSvante()
-            .then(() => runFlorenceSvanteFit())
+        saveParams_FlorenceHybrid()
+            .then(() => runFlorenceHybridFit())
             .then((response) => {
                 let fitJson;
                 try {
@@ -1827,11 +1684,10 @@ $(document).ready(function () {
                 renderSamePlotEverywhere(datasetsArr, curvesArr);
 
                 $('#myTabContent .tab-pane').each(function (tabIdx) {
-                    updateArrheniusFitQuality(this.id, fitJson, tabIdx);
+                    updateHybridFitQuality(this.id, fitJson, tabIdx);
                     setAxisScaleUIVisible(this.id, true);
                 });
-                ErrorSvante(fitJson);
-                renderSvanteTable();
+                ErrorHybrid(fitJson);
             })
             .catch((err) => {
                 if (err && (err.statusText === 'abort' || err === 'abort')) {
@@ -1858,11 +1714,11 @@ $(document).ready(function () {
         setDis(true);
         setSpin(true);
 
-        saveParams_FlorenceSvante(true)
-            .then(() => runFlorenceSvanteFit())
+        saveParams_FlorenceHybrid(true)
+            .then(() => runFlorenceHybridFit())
             .then(response => {
                 const fitJson = (typeof response === "string") ? JSON.parse(response) : response;
-                if (!fitJson) throw new Error("Empty JSON returned from /fit_florence_svante");
+                if (!fitJson) throw new Error("Empty JSON returned from /fit_florence_hybrid");
 
                 __corrLastFitJson = fitJson;
 
@@ -1870,7 +1726,6 @@ $(document).ready(function () {
                 const curvesArr   = parseMultiFitCurves_corr(fitJson["fit-curves"], "fit");
                 renderSamePlotEverywhere(datasetsArr, curvesArr, "plot");
 
-                renderSvanteTable();
                 $('#myTabContent .tab-pane').each(function () {
                     setAxisScaleUIVisible(this.id, true);
                 });
@@ -1907,8 +1762,8 @@ $(document).ready(function () {
             const activeTabId = $('#myTabContent .tab-pane.active').attr('id');
             __corrCompareModeByTab[activeTabId] = !__corrCompareModeByTab[activeTabId];
 
-            if (__corrCompareModeByTab[activeTabId]) svante_plotContribForActiveTab();
-            else                                     svante_plotNormalForActiveTab();
+            if (__corrCompareModeByTab[activeTabId]) hybrid_plotContribForActiveTab();
+            else                                     hybrid_plotNormalForActiveTab();
         });
     })();
 
@@ -2073,7 +1928,7 @@ $(document).on('click', '.editable-profile-name', function () {
         return { x: tFit.x.slice(), y1: tFit.y.slice(), y2: [], hasTwo: false };
     }
 
-    function exportParametersCsv_arrhenius() {
+    function exportParametersCsv_hybrid() {
 
         // --- 0. Reference values from profile 1 (same as the results table) ---
         const $p1 = $('#profile1');
@@ -2196,17 +2051,17 @@ $(document).on('click', '.editable-profile-name', function () {
         });
 
         // --- 5. Serialise ---
-        const filename = `${makeTimestamp()}_${FLORENCE_VARIANT}_arrhenius.csv`;
+        const filename = `${makeTimestamp()}_${FLORENCE_VARIANT}_hybrid.csv`;
         const csvText  = [rowToCsv(header), ...rows.map(r => rowToCsv(r))].join('\n') + '\n';
         downloadBlob(new Blob([csvText], { type: 'text/csv;charset=utf-8' }), filename);
     }
 
     $(document)
-        .off('click.exportCsvArrhenius', '#export-button')
-        .on('click.exportCsvArrhenius', '#export-button', function (e) {
+        .off('click.exportCsvHybrid', '#export-button')
+        .on('click.exportCsvHybrid', '#export-button', function (e) {
             e.preventDefault();
             e.stopPropagation();
-            exportParametersCsv_arrhenius();
+            exportParametersCsv_hybrid();
         });
 
 })();

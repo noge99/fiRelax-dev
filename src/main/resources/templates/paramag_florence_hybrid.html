@@ -27,12 +27,12 @@
                                     <option value="R2">R2</option>
                                 </select>
                             </div>
-                            <input type="text" class="form-control additional-input" placeholder="T">
+                            <input type="text" class="form-control additional-input" placeholder="T" value="298">
                         </div>
                     </a>
                 </li>
                 <li class="nav-item" id="add-tab-container">
-                    <a class="nav-link disabled" href="#" id="add-tab" aria-disabled="true">+</a>
+                    <a class="nav-link" href="#" id="add-tab">+</a>
                 </li>
             </ul>
             <div class="tab-content" id="myTabContent">
@@ -92,14 +92,14 @@
                 <div class="toggle-buttons-container">
                     <p class="small-text mb-1">Individual params</p>
                     <div class="btn-group-vertical" role="group">
-                        <input type="radio" class="btn-check no-circle" name="fitToggle" id="independent" autocomplete="off" checked>
+                        <input type="radio" class="btn-check no-circle" name="fitToggle" id="independent" autocomplete="off" >
                         <label class="btn btn-sm btn-outline-primary" for="independent">Independent</label>
                     </div>
                 </div>
                 <div class="toggle-buttons-container mr-3">
                     <p class="small-text mb-1">Shared params</p>
                     <div class="btn-group-vertical" role="group">
-                        <input type="radio" class="btn-check no-circle" name="fitToggle" id="correlated" onclick="window.location='/florence-hybrid';" autocomplete="off">
+                        <input type="radio" class="btn-check no-circle" name="fitToggle" id="correlated" onclick="window.location='/florence-hybrid';" autocomplete="off" checked>
                         <label class="btn btn-sm btn-outline-primary" for="correlated">Hybrid</label>
 
                         <input type="radio" class="btn-check no-circle" name="fitToggle" id="arrhenius" onclick="window.location='/florence-arrhenius';" autocomplete="off">
@@ -151,7 +151,7 @@
     <script src="/js/bootstrap.bundle.js" type="text/javascript" ></script>
 
     <script src="/js/plotly.min.js"></script>
-    <script src="/js/paramag_florence_indie.js"></script>
+    <script src="/js/paramag_florence_hybrid.js"></script>
 
     <link rel="stylesheet" href="/css/tabUI.css">
 
