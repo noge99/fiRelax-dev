@@ -784,13 +784,16 @@ $(document).ready(function () {
     });
 
 
+    let __syncingFixFree = false;
+
     $(document).on('change', '.fix-free-switch', function () {
         const isChecked = $(this).is(':checked');
-        const labelElement = $(this).next('label');
-        labelElement.text(isChecked ? 'Free' : 'Fix');
+        $(this).next('label').text(isChecked ? 'Free' : 'Fix');
 
-        const $row = $(this).closest('.parameter-input');
-        if ($row.data('param') === 'D') {
+        const $row  = $(this).closest('.parameter-input');
+        const param = String($row.data('param') || '');
+
+        if (param === 'D') {
             if (isChecked) {
                 $row.find('.d-label-static').show();
                 $row.find('.d-label-dropdown').hide();
@@ -799,7 +802,38 @@ $(document).ready(function () {
                 $row.find('.d-label-dropdown').show();
             }
         }
+
+        // Fix/Free synchronized across all tabs (same parameter)
+        if (__syncingFixFree || !param) return;
+        __syncingFixFree = true;
+        try {
+            $(`.parameter-input[data-param="${param}"] .fix-free-switch`).not(this).each(function () {
+                if (this.checked !== isChecked) $(this).prop('checked', isChecked).trigger('change');
+            });
+        } finally {
+            __syncingFixFree = false;
+        }
     });
+
+    // New tab: copy Fix/Free state from the first existing tab
+    function applyFixFreeStateToProfile(profileId) {
+        const refId = $('#myTabContent .tab-pane').not(`#${profileId}`).first().attr('id');
+        if (!refId) return;
+
+        __syncingFixFree = true;
+        try {
+            $(`#${profileId} .parameter-input`).each(function () {
+                const param = String($(this).data('param') || '');
+                const $ref  = $(`#${refId} .parameter-input[data-param="${param}"] .fix-free-switch`).first();
+                const $own  = $(this).find('.fix-free-switch').first();
+                if ($ref.length && $own.length && $own.prop('checked') !== $ref.prop('checked')) {
+                    $own.prop('checked', $ref.prop('checked')).trigger('change');
+                }
+            });
+        } finally {
+            __syncingFixFree = false;
+        }
+    }
 
     function applySharedStateToProfile(profileId) {
         $(`#${profileId} .shared-checkbox`).each(function () {
@@ -816,6 +850,47 @@ $(document).ready(function () {
         sharedState[param] = !!isChecked;
         $(`.shared-checkbox[data-param="${param}"]`).prop('checked', !!isChecked);
     });
+
+    // Section checkboxes synchronized across all tabs
+    const SYNC_SECTIONS = [
+        'fermiContactTermCheckbox', 'secondSphereCheckbox', 'outerSphereCheckbox', 'modelFreeCheckbox',
+        'zfsAnglesChk', 'zfsStaticChk', 'zfsGTensorChk', 'zfsHyperfineChk'
+    ];
+    let __syncingSections = false;
+
+    $(document).on('change', SYNC_SECTIONS.map(p => `input[id^="${p}-"]`).join(', '), function () {
+        if (__syncingSections) return;
+        const prefix = this.id.replace(/-profile\d+$/, '');
+        const isChecked = this.checked;
+
+        __syncingSections = true;
+        try {
+            $(`input[id^="${prefix}-profile"]`).not(this).each(function () {
+                if (this.checked !== isChecked) $(this).prop('checked', isChecked).trigger('change');
+            });
+        } finally {
+            __syncingSections = false;
+        }
+    });
+
+    // New tab: copy section state from the first existing tab
+    function applySectionStateToProfile(profileId) {
+        const refId = $('#myTabContent .tab-pane').not(`#${profileId}`).first().attr('id');
+        if (!refId) return;
+
+        __syncingSections = true;
+        try {
+            SYNC_SECTIONS.forEach(p => {
+                const $ref = $(`#${p}-${refId}`);
+                const $own = $(`#${p}-${profileId}`);
+                if ($ref.length && $own.length && $own.prop('checked') !== $ref.prop('checked')) {
+                    $own.prop('checked', $ref.prop('checked')).trigger('change');
+                }
+            });
+        } finally {
+            __syncingSections = false;
+        }
+    }
 
     function syncDistreteD(mode) {
         DmodeState.D = mode;
@@ -975,6 +1050,8 @@ $(document).ready(function () {
         $('[data-toggle="tooltip"]').tooltip(); // Reinitialize tooltips
         applySharedStateToProfile(`profile${profileCount}`);
         applyDmodeToProfile(`profile${profileCount}`);
+        applySectionStateToProfile(`profile${profileCount}`);
+        applyFixFreeStateToProfile(`profile${profileCount}`);
 
         (function () {
             const $textarea = $('#shared-textarea');

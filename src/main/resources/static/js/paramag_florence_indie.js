@@ -309,6 +309,90 @@ $(document).ready(function () {
             updateSelectOptions();
         });
 
+        const secondSphereHTML = `
+        <div class="form-check mt-3">
+            <input type="checkbox" class="form-check-input" id="secondSphereCheckbox-${profileId}">
+            <label class="form-check-label" for="secondSphereCheckbox-${profileId}">Second sphere</label>
+        </div>
+        <div id="secondSphereParametersContainer-${profileId}"></div>`;
+        parametersContainer.append(secondSphereHTML);
+
+        $(`#secondSphereCheckbox-${profileId}`).on('change', function () {
+            const container = $(`#secondSphereParametersContainer-${profileId}`);
+            if (!this.checked) {
+                container.empty();
+                return;
+            }
+
+            container.html(`
+
+            <div class="parameter-input mb-3" data-param="q2">
+                <div class="input-group">
+                    <span class="input-group-text">q</span>
+
+                    <span class="input-group-text p-0 switch-cell">
+                        <div class="form-check form-switch ms-2 me-2 my-1">
+                            <input class="form-check-input fix-free-switch" type="checkbox" role="switch"
+                                   id="switchQ2-${profileId}">
+                            <label class="form-check-label ms-2" for="switchQ2-${profileId}">Fix</label>
+                        </div>
+                    </span>
+
+                    <input type="text" class="form-control param-value" title="number of coordinated H2O (second sphere). q > 0" placeholder="nb. of H2O (second sphere)" value="1">
+                    <input type="text" class="form-control param-error" readonly placeholder="Error">
+                    <input type="text" class="form-control param-min" placeholder="min">
+                    <input type="text" class="form-control param-max" placeholder="max">
+                </div>
+            </div>
+
+            <div class="parameter-input mb-3" data-param="tm2">
+                <div class="input-group">
+                    <span class="input-group-text">τ<sub>m</sub></span>
+
+                    <span class="input-group-text p-0 switch-cell">
+                        <div class="form-check form-switch ms-2 me-2 my-1">
+                            <input class="form-check-input fix-free-switch" type="checkbox" role="switch"
+                                   id="switchTm2-${profileId}" checked>
+                            <label class="form-check-label ms-2" for="switchTm2-${profileId}">Free</label>
+                        </div>
+                    </span>
+
+                    <input type="text" class="form-control param-value" title="Lifetime of the water molecule in contact (second sphere). Unit: s" placeholder="Lifetime of the water molecule in contact" value="1e-8">
+                    <input type="text" class="form-control param-error" readonly placeholder="Error">
+                    <input type="text" class="form-control param-min" placeholder="min" value="1e-11">
+                    <input type="text" class="form-control param-max" placeholder="max" value="1e-6">
+                </div>
+            </div>
+
+            <div class="parameter-input mb-3" data-param="r2">
+                <div class="input-group">
+
+                    <div class="input-group-text dropdown param-label-dropdown">
+                        <button class="btn btn-sm btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                            r [Å]
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item active" data-unit="A">r [Å]</a></li>
+                            <li><a class="dropdown-item" data-unit="m">r [m]</a></li>
+                        </ul>
+                    </div>
+
+                    <span class="input-group-text p-0 switch-cell">
+                        <div class="form-check form-switch ms-2 me-2 my-1">
+                            <input class="form-check-input fix-free-switch" type="checkbox" role="switch"
+                                   id="switchR2-${profileId}" checked>
+                            <label class="form-check-label ms-2" for="switchR2-${profileId}">Free</label>
+                        </div>
+                    </span>
+
+                    <input type="text" class="form-control param-value" title="Proton-Metal Distance (second sphere). Unit: m or Å" placeholder="Proton-Metal Distance (second sphere)" value="3">
+                    <input type="text" class="form-control param-error" readonly placeholder="Error">
+                    <input type="text" class="form-control param-min" placeholder="min">
+                    <input type="text" class="form-control param-max" placeholder="max">
+                </div>
+            </div>
+        `);
+        });
 
 
 
@@ -812,7 +896,6 @@ $(document).ready(function () {
 
         parametersToToggle.toggle();
 
-        // Toggle button text
         const buttonText = $(this).text() === 'Hide System Parameters' ? 'Show System Parameters' : 'Hide System Parameters';
         $(this).text(buttonText);
     });
@@ -820,12 +903,15 @@ $(document).ready(function () {
     const TWO_PI_c = 2 * 29979245800 * Math.PI;
 
 
-
+    const SS_PARAMS = ["tm2", "r2", "q2"];
+    function ssStartIndex(profileId) {
+        const isMF = $(`#modelFreeCheckbox-${profileId}`).is(':checked');
+        return (isMF ? 25 : 23) + 2;   // FLAG, FN, then second sphere
+    }
 
     function saveParams_Florence() {
 
         const FLORENCE_ORDER = [
-            // 0..22 (exact Florence order)
             { ui: "SI",         group: "hyperfine" },             // 0
             { ui: "gammaI",     group: null },                    // 1
             { ui: "S",          group: null },                    // 2  (SPIN in JSON)
@@ -904,7 +990,7 @@ $(document).ready(function () {
                 if (x === "") return "";
                 if (!Number.isFinite(x)) return "";
 
-                if (paramName === "r") {
+                if (paramName === "r" || paramName === "r2") {
                     return (unit === "m") ? (x * angstrom) : x;  // m -> Å
                 }
 
@@ -912,7 +998,7 @@ $(document).ready(function () {
                     return (unit === "A") ? (x / angstrom) : x;  // Å -> m
                 }
 
-                if (paramName === "q") {
+                if (paramName === "q" || paramName === "q2") {
                     return 2 * x;
                 }
 
@@ -1047,6 +1133,20 @@ $(document).ready(function () {
                 }
             }
 
+            const isSecondSphereChecked = $(`#secondSphereCheckbox-${profileId}`).is(':checked');
+            data["SecondSphere"] = isSecondSphereChecked ? "true" : "false";
+
+            if (isSecondSphereChecked) {
+                const ssStart = ssStartIndex(profileId);
+                SS_PARAMS.forEach((p, k) => {
+                    const vv = readRow(findRow(profileId, p));
+                    data[`F${ssStart + k}`]    = vv.F;
+                    data[`Pval${ssStart + k}`] = vv.Pval;
+                    data[`Pmin${ssStart + k}`] = vv.Pmin;
+                    data[`Pmax${ssStart + k}`] = vv.Pmax;
+                });
+            }
+
 
             let rawInput = $(`#textarea-${profileId}`).val() || "";
             let lines = rawInput.trim().split('\n');
@@ -1060,7 +1160,7 @@ $(document).ready(function () {
 
                 for (const ln of lns) {
                     if (ln.trim().startsWith("# TAG")) {
-                        out.push(`# DATA P = ${tVal}`);
+                        out.push(`# DATA N = ${tVal}`);
                     }
                     out.push(ln);
                 }
@@ -1113,7 +1213,6 @@ $(document).ready(function () {
             tabIndex++;
         });
 
-        // IMPORTANT: allow callers to .then() (your fit-button does this)
         return Promise.all(saveRequests);
     }
 
@@ -1188,7 +1287,7 @@ $(document).ready(function () {
             const unit = ($active.data('unit') || '').toString();
 
             // r: store Å
-            if (paramName === "r") {
+            if (paramName === "r" || paramName === "r2") {
                 return (unit === "m") ? (v * angstrom) : v;
             }
 
@@ -1197,7 +1296,7 @@ $(document).ready(function () {
                 return (unit === "A") ? (v / angstrom) : v;
             }
 
-            if (paramName === "q") {
+            if (paramName === "q" || paramName === "q2") {
                 return 2 * v;
             }
 
@@ -1226,7 +1325,7 @@ $(document).ready(function () {
 
             for (const ln of lns) {
                 if (ln.trim().startsWith("# TAG")) {
-                    out.push(`# DATA P = ${tVal}`);
+                    out.push(`# DATA N = ${tVal}`);
                 }
                 out.push(ln);
             }
@@ -1361,6 +1460,19 @@ $(document).ready(function () {
                 }
             }
 
+            const isSecondSphereChecked = $(`#secondSphereCheckbox-${profileId}`).is(':checked');
+            data["SecondSphere"] = isSecondSphereChecked ? "true" : "false";
+
+            if (isSecondSphereChecked) {
+                const ssStart = ssStartIndex(profileId);
+                SS_PARAMS.forEach((p, k) => {
+                    data[`F${ssStart + k}`]    = "Fix";
+                    data[`Pval${ssStart + k}`] = readValueForPlot(findRow(profileId, p));
+                    data[`Pmin${ssStart + k}`] = "";
+                    data[`Pmax${ssStart + k}`] = "";
+                });
+            }
+
             data["Tags"] = [data["ProfileName"]];
             data["SelectedDataSet"] = data["ProfileName"];
 
@@ -1452,7 +1564,7 @@ $(document).ready(function () {
 
             const unit = ($row.find('.param-label-dropdown .dropdown-item.active').data('unit') || "").toString();
 
-            if (paramName === "r") {
+            if (paramName === "r" || paramName === "r2") {
                 // stored Å; UI may be Å or m
                 return (unit === "m") ? (x / angstrom) : x;
             }
@@ -1468,7 +1580,7 @@ $(document).ready(function () {
                 return x; // cm-1 or ts0
             }
 
-            if (paramName === "q") {
+            if (paramName === "q" || paramName === "q2") {
                 return x / 2;
             }
 
@@ -1503,7 +1615,7 @@ $(document).ready(function () {
 
             const unit = ($row.find('.param-label-dropdown .dropdown-item.active').data('unit') || "").toString();
 
-            if (paramName === "r") {
+            if (paramName === "r" || paramName === "r2") {
                 return (unit === "m") ? (e / angstrom) : e; // stored Å
             }
 
@@ -1520,7 +1632,7 @@ $(document).ready(function () {
                 return e;
             }
 
-            if (paramName === "q") {
+            if (paramName === "q" || paramName === "q2") {
                 return e / 2;
             }
 
@@ -1573,6 +1685,20 @@ $(document).ready(function () {
                 $fnRow.find('.param-min').val(fnMin === "" ? "" : formatValue(fnMin));
                 $fnRow.find('.param-max').val(fnMax === "" ? "" : formatValue(fnMax));
             }
+        }
+
+        if ($(`#secondSphereCheckbox-${profileId}`).is(':checked')) {
+            const ssStart = ssStartIndex(profileId);
+            SS_PARAMS.forEach((p, k) => {
+                const $row = findRow(p);
+                if (!$row.length) return;
+                const v    = storedToUi(p, data[`Pval${ssStart + k}`], $row);
+                const vmin = storedToUi(p, data[`Pmin${ssStart + k}`], $row);
+                const vmax = storedToUi(p, data[`Pmax${ssStart + k}`], $row);
+                $row.find('.param-value').val(v === "" ? "" : formatValue(v));
+                $row.find('.param-min').val(vmin === "" ? "" : formatValue(vmin));
+                $row.find('.param-max').val(vmax === "" ? "" : formatValue(vmax));
+            });
         }
 
         const fitResults = data && data["fit-results"];
@@ -1634,6 +1760,17 @@ $(document).ready(function () {
                     $fnRow.find('.param-error').val(
                         typeof fnErrUi === "number" ? formatValue(fnErrUi) : ""
                     );
+                }
+
+                if ($(`#secondSphereCheckbox-${profileId}`).is(':checked')) {
+                    const ssStart = ssStartIndex(profileId);
+                    SS_PARAMS.forEach((p, k) => {
+                        const $row = findRow(p);
+                        if (!$row.length) return;
+                        const c = startCol + 2 * (ssStart + k);
+                        const errUi = storedErrToUi(p, tokens[c + 1], tokens[c], $row);
+                        $row.find('.param-error').val(typeof errUi === "number" ? formatValue(errUi) : "");
+                    });
                 }
             }
         }

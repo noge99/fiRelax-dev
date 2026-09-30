@@ -731,18 +731,15 @@ $(document).ready(function () {
                 });
             }
 
-// Re-render when ZFS radio changes for this profile
             $(document).off(`change.zfs.${profileId}`, `input[name="zfsSymmetry-${profileId}"]`)
                 .on(`change.zfs.${profileId}`, `input[name="zfsSymmetry-${profileId}"]`, function () {
                     renderZfsBlock();
                 });
 
-// Initial render (Axial is default in your UI)
             renderZfsBlock();
 
     }
 
-    // Local-only unit dropdown handler (no sync)
     $(document).on("click", ".param-label-dropdown .dropdown-item", function (e) {
         e.preventDefault();
         const $item = $(this);
@@ -753,13 +750,16 @@ $(document).ready(function () {
     });
 
 
+    let __syncingFixFree = false;
+
     $(document).on('change', '.fix-free-switch', function () {
         const isChecked = $(this).is(':checked');
-        const labelElement = $(this).next('label');
-        labelElement.text(isChecked ? 'Free' : 'Fix');
+        $(this).next('label').text(isChecked ? 'Free' : 'Fix');
 
-        const $row = $(this).closest('.parameter-input');
-        if ($row.data('param') === 'D') {
+        const $row  = $(this).closest('.parameter-input');
+        const param = String($row.data('param') || '');
+
+        if (param === 'D') {
             if (isChecked) {
                 $row.find('.d-label-static').show();
                 $row.find('.d-label-dropdown').hide();
@@ -768,7 +768,36 @@ $(document).ready(function () {
                 $row.find('.d-label-dropdown').show();
             }
         }
+
+        if (__syncingFixFree || !param) return;
+        __syncingFixFree = true;
+        try {
+            $(`.parameter-input[data-param="${param}"] .fix-free-switch`).not(this).each(function () {
+                if (this.checked !== isChecked) $(this).prop('checked', isChecked).trigger('change');
+            });
+        } finally {
+            __syncingFixFree = false;
+        }
     });
+
+    function applyFixFreeStateToProfile(profileId) {
+        const refId = $('#myTabContent .tab-pane').not(`#${profileId}`).first().attr('id');
+        if (!refId) return;
+
+        __syncingFixFree = true;
+        try {
+            $(`#${profileId} .parameter-input`).each(function () {
+                const param = String($(this).data('param') || '');
+                const $ref  = $(`#${refId} .parameter-input[data-param="${param}"] .fix-free-switch`).first();
+                const $own  = $(this).find('.fix-free-switch').first();
+                if ($ref.length && $own.length && $own.prop('checked') !== $ref.prop('checked')) {
+                    $own.prop('checked', $ref.prop('checked')).trigger('change');
+                }
+            });
+        } finally {
+            __syncingFixFree = false;
+        }
+    }
 
     function applySharedStateToProfile(profileId) {
         $(`#${profileId} .shared-checkbox`).each(function () {
@@ -817,6 +846,45 @@ $(document).ready(function () {
         if (__syncingDmode) return;
         syncDistreteD($item.data('mode'));
     });
+
+    const SYNC_SECTIONS = [
+        'fermiContactTermCheckbox', 'secondSphereCheckbox', 'outerSphereCheckbox', 'modelFreeCheckbox',
+        'zfsAnglesChk', 'zfsStaticChk', 'zfsGTensorChk', 'zfsHyperfineChk'
+    ];
+    let __syncingSections = false;
+
+    $(document).on('change', SYNC_SECTIONS.map(p => `input[id^="${p}-"]`).join(', '), function () {
+        if (__syncingSections) return;
+        const prefix = this.id.replace(/-profile\d+$/, '');
+        const isChecked = this.checked;
+
+        __syncingSections = true;
+        try {
+            $(`input[id^="${prefix}-profile"]`).not(this).each(function () {
+                if (this.checked !== isChecked) $(this).prop('checked', isChecked).trigger('change');
+            });
+        } finally {
+            __syncingSections = false;
+        }
+    });
+
+    function applySectionStateToProfile(profileId) {
+        const refId = $('#myTabContent .tab-pane').not(`#${profileId}`).first().attr('id');
+        if (!refId) return;
+
+        __syncingSections = true;
+        try {
+            SYNC_SECTIONS.forEach(p => {
+                const $ref = $(`#${p}-${refId}`);
+                const $own = $(`#${p}-${profileId}`);
+                if ($ref.length && $own.length && $own.prop('checked') !== $ref.prop('checked')) {
+                    $own.prop('checked', $ref.prop('checked')).trigger('change');
+                }
+            });
+        } finally {
+            __syncingSections = false;
+        }
+    }
 
 
     // Make the open dropdown row overlap neighbors (like _corr.js)
@@ -934,7 +1002,9 @@ $(document).ready(function () {
         createParameterFields(`profile${profileCount}`);
         $('[data-toggle="tooltip"]').tooltip(); // Reinitialize tooltips
         applySharedStateToProfile(`profile${profileCount}`);
+        applySectionStateToProfile(`profile${profileCount}`);
         applyDmodeToProfile(`profile${profileCount}`);
+        applyFixFreeStateToProfile(`profile${profileCount}`);
 
         (function () {
             const $textarea = $('#shared-textarea');
@@ -970,7 +1040,7 @@ $(document).ready(function () {
         $('.nav-tabs a:first').tab('show');
 
     });
-
+    // applySectionStateToProfile(`profile${profileCount}`);
 
     $(document).on('click', '.toggle-parameters', function () {
         const profileId = $(this).data('profile');
@@ -1169,6 +1239,11 @@ $(document).ready(function () {
             return parts.join(" ");
         });
 
+        const temps = $('.nav-tabs .nav-link .additional-input').map(function () {
+            const t = parseFloat($(this).val());
+            return Number.isFinite(t) ? String(t) : "";      // "" keeps tab alignment
+        }).get();
+
         const Dvals = $('#myTabContent .tab-pane').map(function () {
             return ($(`#${this.id} .parameter-input[data-param="D"] .param-value`).val() || "").trim();
         }).get();
@@ -1178,9 +1253,10 @@ $(document).ready(function () {
         for (const ln of processedLines) {
             if (ln.startsWith("# TAG")) {
                 counter++;
+                const Tstr = temps[counter - 1] || "";
                 out.push(isDdiscrete
-                    ? `# DATA N=${counter} ${counter} ${Dvals[counter - 1] || ""}`
-                    : `# DATA N=${counter} ${counter}`);
+                    ? `# DATA N = ${Tstr} ${counter} ${Dvals[counter - 1] || ""}`
+                    : `# DATA N = ${Tstr} ${counter}`);
             }
             out.push(ln);
         }
