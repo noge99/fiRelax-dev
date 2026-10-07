@@ -137,12 +137,14 @@ $(document).ready(function () {
             const minDefault =
                 param.name === 'tm' ? 1e-11 :
                     param.name === 'tv' ? 1e-14 :
-                        param.name === 'tR' ? 1e-10 : '';
+                        param.name === 'tR' ? 1e-10 :
+                            param.name === 'Delta2' ? 0.001 : '';
 
             const maxDefault =
                 param.name === 'tm' ? 1e-6 :
                     param.name === 'tv' ? 1e-9 :
-                        param.name === 'tR' ? 1e-5 : '';
+                        param.name === 'tR' ? 1e-5 :
+                            param.name === 'Delta2' ? 0.1 : '';
 
             const valueDefault =
                 param.name === 'q' ? 1 :
@@ -270,8 +272,8 @@ $(document).ready(function () {
 
                     <input type="text" class="form-control param-value" title="Hyperfine coupling constant. Unit: MHz" placeholder="Hyperfine coupling constant">
                     <input type="text" class="form-control param-error" readonly placeholder="Error">
-                    <input type="text" class="form-control param-min" placeholder="min">
-                    <input type="text" class="form-control param-max" placeholder="max">
+                    <input type="text" class="form-control param-min" placeholder="min" value="0">
+                    <input type="text" class="form-control param-max" placeholder="max" value="1.5">
                 </div>
                 <div class="form-check form-check-inline ms-1">
                     <input class="form-check-input shared-checkbox" type="checkbox" id="${profileId}-Aoh-shared" data-param="Aoh">
@@ -675,12 +677,12 @@ $(document).ready(function () {
 
                     if (mode === "axial") {
                         $c.html(
-                            zfsParamRow("dparam", "DP", "D Axial Part")
+                            zfsParamRow("dparam", "DP", "D Axial Part", 0.001, 0.1)
                         );
                     } else { // rhombic
                         $c.html(
-                            zfsParamRow("dparam", "DP", "D Axial Part") +
-                            zfsParamRow("eparam", "EP", "E Rhombic Part")
+                            zfsParamRow("dparam", "DP", "D Axial Part", 0.001, 0.1) +
+                            zfsParamRow("eparam", "EP", "E Rhombic Part", 0.001, 0.1)
                         );
                     }
                 });
@@ -763,6 +765,7 @@ $(document).ready(function () {
             if (isChecked) {
                 $row.find('.d-label-static').show();
                 $row.find('.d-label-dropdown').hide();
+                if (DmodeState.D !== "X") syncDistreteD("X");
             } else {
                 $row.find('.d-label-static').hide();
                 $row.find('.d-label-dropdown').show();
@@ -1066,7 +1069,8 @@ $(document).ready(function () {
         const isModelFreeChecked    = $(`#modelFreeCheckbox-${profileId}`).is(':checked');
         const isOuterSphereChecked  = $(`#outerSphereCheckbox-${profileId}`).is(':checked');
         const isSecondSphereChecked = $(`#secondSphereCheckbox-${profileId}`).is(':checked');
-        const isDdiscrete           = isOuterSphereChecked && DmodeState.D === "Y";
+        const $dSw                  = $(`#${profileId} .parameter-input[data-param="D"] .fix-free-switch`);
+        const isDdiscrete           = isOuterSphereChecked && DmodeState.D === "Y" && $dSw.length > 0 && !$dSw.is(':checked');
 
         // Parameter order: Florence > Lipari-Szabo > SS
         const ORDER = [
@@ -1267,7 +1271,7 @@ $(document).ready(function () {
         data["ModelFree"]    = isModelFreeChecked ? "true" : "false";
         data["OuterSphere"]  = isOuterSphereChecked ? "true" : "false";
         data["SecondSphere"] = isSecondSphereChecked ? "true" : "false";
-        data["Dmode"]        = DmodeState.D;
+        data["Dmode"]        = isDdiscrete ? "Y" : "X";
         data["Variant"]      = FLORENCE_VARIANT;
         data["FitType"]      = "Individual";
 

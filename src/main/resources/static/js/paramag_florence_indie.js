@@ -170,12 +170,14 @@ $(document).ready(function () {
             const minDefault =
                 param.name === 'tm' ? 1e-11 :
                     param.name === 'tv' ? 1e-14 :
-                        param.name === 'tR' ? 1e-10 : '';
+                        param.name === 'tR' ? 1e-10 :
+                            param.name === 'Delta2' ? 0.001 : '';
 
             const maxDefault =
                 param.name === 'tm' ? 1e-6 :
                     param.name === 'tv' ? 1e-9 :
-                        param.name === 'tR' ? 1e-5 : '';
+                        param.name === 'tR' ? 1e-5 :
+                            param.name === 'Delta2' ? 0.1 : '';
 
             const valueDefault =
                 param.name === 'q' ? 1 :
@@ -296,8 +298,8 @@ $(document).ready(function () {
 
                     <input type="text" class="form-control param-value" title="Hyperfine coupling constant. Unit: MHz" placeholder="Hyperfine coupling constant">
                     <input type="text" class="form-control param-error" readonly placeholder="Error">
-                    <input type="text" class="form-control param-min" placeholder="min">
-                    <input type="text" class="form-control param-max" placeholder="max">
+                    <input type="text" class="form-control param-min" placeholder="min" value="0">
+                    <input type="text" class="form-control param-max" placeholder="max" value="1.5">
                 </div>
 
 <!--                 <select class="form-select ms-2 narrow-select copy-Aoh-select"
@@ -661,12 +663,12 @@ $(document).ready(function () {
 
                     if (mode === "axial") {
                         $c.html(
-                            zfsParamRow("dparam", "DP", "D Axial Part")
+                            zfsParamRow("dparam", "DP", "D Axial Part", 0.001, 0.1)
                         );
                     } else { // rhombic
                         $c.html(
-                            zfsParamRow("dparam", "DP", "D Axial Part") +
-                            zfsParamRow("eparam", "EP", "E Rhombic Part")
+                            zfsParamRow("dparam", "DP", "D Axial Part", 0.001, 0.1) +
+                            zfsParamRow("eparam", "EP", "E Rhombic Part", 0.001, 0.1)
                         );
                     }
                 });
@@ -1319,7 +1321,6 @@ $(document).ready(function () {
             const lns = text.split(/\r?\n/);
             const out = [];
 
-            // keep same behavior as saveParams_Florence: use the tab's additional-input as DATA P
             const tRaw = $(`#${profileId}-tab`).find('input.additional-input').val();
             const tVal = (tRaw ?? "").toString().trim() || "1";
 

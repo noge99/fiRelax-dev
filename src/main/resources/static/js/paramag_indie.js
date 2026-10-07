@@ -190,12 +190,14 @@ $(document).ready(function () {
             const minDefault =
                 param.name === 'tm' ? 1e-11 :
                     param.name === 'tv' ? 1e-12 :
-                        param.name === 'tR' ? 1e-12 : '';
+                        param.name === 'tR' ? 1e-12 :
+                            param.name === 'Delta2' ? 0.001 : '';
 
             const maxDefault =
                 param.name === 'tm' ? 1e-6 :
                     param.name === 'tv' ? 1e-7 :
-                        param.name === 'tR' ? 1e-7 : '';
+                        param.name === 'tR' ? 1e-7 :
+                            param.name === 'Delta2' ? 0.1 : '';
 
             const valueDefault =
                 param.name === 'q' ? 1 :

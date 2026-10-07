@@ -143,7 +143,8 @@ $(document).ready(function () {
                         param.name === 'tR' ? 1e-10 :
                             param.name === 'Em' ? 1e3 :
                                 param.name === 'ER' ? 1e3 :
-                                    param.name === 'Ev' ? 1e3 : '';
+                                    param.name === 'Ev' ? 1e3 :
+                                        param.name === 'Delta2' ? 0.001 : '';
 
             const maxDefault =
                 param.name === 'tm' ? 1e-6 :
@@ -151,7 +152,8 @@ $(document).ready(function () {
                         param.name === 'tR' ? 1e-5 :
                             param.name === 'Em' ? 1e4 :
                                 param.name === 'ER' ? 1e4 :
-                                    param.name === 'Ev' ? 1e4 : '';
+                                    param.name === 'Ev' ? 1e4 :
+                                        param.name === 'Delta2' ? 0.1 : '';
 
             const valueDefault =
                 param.name === 'q' ? 1 :
@@ -284,8 +286,8 @@ $(document).ready(function () {
 
                     <input type="text" class="form-control param-value" title="Hyperfine coupling constant. Unit: MHz" placeholder="Hyperfine coupling constant">
                     <input type="text" class="form-control param-error" readonly placeholder="Error">
-                    <input type="text" class="form-control param-min" placeholder="min">
-                    <input type="text" class="form-control param-max" placeholder="max">
+                    <input type="text" class="form-control param-min" placeholder="min" value="0">
+                    <input type="text" class="form-control param-max" placeholder="max" value="1.5">
                 </div>
                 <div class="form-check form-check-inline ms-1">
                     <input class="form-check-input shared-checkbox" type="checkbox" id="${profileId}-Aoh-shared" data-param="Aoh">
@@ -706,12 +708,12 @@ $(document).ready(function () {
 
                     if (mode === "axial") {
                         $c.html(
-                            zfsParamRow("dparam", "DP", "D Axial Part")
+                            zfsParamRow("dparam", "DP", "D Axial Part", 0.001, 0.1)
                         );
                     } else { // rhombic
                         $c.html(
-                            zfsParamRow("dparam", "DP", "D Axial Part") +
-                            zfsParamRow("eparam", "EP", "E Rhombic Part")
+                            zfsParamRow("dparam", "DP", "D Axial Part", 0.001, 0.1) +
+                            zfsParamRow("eparam", "EP", "E Rhombic Part", 0.001, 0.1)
                         );
                     }
                 });

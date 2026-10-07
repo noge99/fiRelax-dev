@@ -293,6 +293,10 @@ $(document).ready(function () {
                     if ($sw.length) {
                         $sw.prop('checked', isFree);
                         $sw.next('label').text(isFree ? 'Free' : 'Fix');
+                        if (p === 'D') {
+                            $(this).find('.d-label-static').toggle(isFree);
+                            $(this).find('.d-label-dropdown').toggle(!isFree);
+                        }
                     }
                 }
             });
@@ -364,27 +368,27 @@ $(document).ready(function () {
         }
         return value !== undefined && value !== null ? String(value) : "";
     }
-    // === Global sync state for section checkboxes ===
     const sectionState = {
         fermi: false,
+        secondSphere: false,
         modelFree: false,
         outerSphere: false,
     };
 
     let __syncingSections = false;
 
-// Apply the current global section state to one profile (called when a tab is created)
     function StateOfProfile(profileId) {
         __syncingSections = true;
         try {
             $(`#fermiContactTermCheckbox-${profileId}`)
                 .prop("checked", !!sectionState.fermi)
                 .trigger("change");
-
+            $(`#secondSphereCheckbox-${profileId}`)
+                .prop("checked", !!sectionState.secondSphere)
+                .trigger("change");
             $(`#modelFreeCheckbox-${profileId}`)
                 .prop("checked", !!sectionState.modelFree)
                 .trigger("change");
-
             $(`#outerSphereCheckbox-${profileId}`)
                 .prop("checked", !!sectionState.outerSphere)
                 .trigger("change");
@@ -393,7 +397,6 @@ $(document).ready(function () {
         }
     }
 
-// Broadcast a single section's state to all profiles
     function syncSectionAcrossTabs(sectionKey, isChecked) {
         sectionState[sectionKey] = !!isChecked;
 
@@ -403,6 +406,8 @@ $(document).ready(function () {
                 const pid = $(this).attr("id");
                 if (sectionKey === "fermi") {
                     $(`#fermiContactTermCheckbox-${pid}`).prop("checked", isChecked).trigger("change");
+                } else if (sectionKey === "secondSphere") {
+                    $(`#secondSphereCheckbox-${pid}`).prop("checked", isChecked).trigger("change");
                 } else if (sectionKey === "modelFree") {
                     $(`#modelFreeCheckbox-${pid}`).prop("checked", isChecked).trigger("change");
                 } else if (sectionKey === "outerSphere") {
@@ -438,7 +443,7 @@ $(document).ready(function () {
         parameterContainer.append(flexContainer);
 
         const parametersContainer = $(`#${profileId}-parameters`);
-        const SHARED_PAR = ['q','C','ms','rho','S','r','Delta2','Aoh','SLS','tl', 'El','D','a','fn'];
+        const SHARED_PAR = ['q','C','ms','rho','S','r','Delta2','Aoh','q2','r2','SLS','tl', 'El','D','a','fn'];
 
         // --- MAIN PARAMETER INPUTS
         parameters.forEach((param, index) => {
@@ -450,13 +455,15 @@ $(document).ready(function () {
                     param.name === 'tR' ? 1e-12 :
                         param.name === 'Em' ? 1e3 :
                             param.name === 'ER' ? 1e3 :
-                                param.name === 'Ev' ? 1e3 : '';
+                                param.name === 'Ev' ? 1e3 :
+                                    param.name === 'Delta2' ? 0.001 : '';
             const maxDefault = param.name === 'tm' ? 1e-6 :
                 param.name === 'tv' ? 1e-7 :
                     param.name === 'tR' ? 1e-7:
                         param.name === 'Em' ? 1e4 :
                             param.name === 'ER' ? 1e4 :
-                                param.name === 'Ev' ? 1e4 : '';
+                                param.name === 'Ev' ? 1e4 :
+                                    param.name === 'Delta2' ? 0.1 : '';
             const valueDefault =
                 param.name === 'q' ? 1 :
                     param.name === 'C' ? 1 :
@@ -480,16 +487,6 @@ $(document).ready(function () {
         <label class="form-check-label" for="${profileId}-${param.name}-shared">Shared</label>
       </div>` : '';
 
-            const noCopySelect = ['tm','Em','tR','ER','tv','Ev'].includes(param.name);
-            const copySelect = noCopySelect ? '' : `
-              <select class="form-select ms-2 copy-${param.name}-select narrow-select"
-                      data-param="${param.name}" data-profile="${profileId}">
-                <option value="indie">indie</option>
-              </select>`;
-
-
-            // ---- UI-only display names with subscripts (internal names unchanged)
-            // subscripts: m → ₘ, r → ᵣ, v → ᵥ, n → ₙ
             let uiName = param.name;
             if (param.name === 'Delta2') uiName = 'Δ<sup>2</sup>';
             else if (param.name === 'tm') uiName = 'τ<sub>m</sub><sup>298K</sup>';
@@ -501,7 +498,6 @@ $(document).ready(function () {
             else if (param.name === 'ER') uiName = 'E<sub>R</sub>';
             else if (param.name === 'Ev') uiName = 'E<sub>v</sub>';
 
-            // ---- Parameter label: plain text OR dropdown (r, Δ²)
             let paramLabelHTML = `<span class="input-group-text">${uiName}</span>`;
 
             if (param.name === "r") {
@@ -550,7 +546,6 @@ $(document).ready(function () {
           <input type="text" class="form-control param-max" placeholder="max" value="${maxDefault}">
         </div>
         ${sharedCheckbox}
-        ${copySelect}
       </div>`;
             parametersContainer.append(row);
         });
@@ -565,6 +560,16 @@ $(document).ready(function () {
     </div>
     <div id="dynamicParametersContainer-${profileId}"></div>`;
         parametersContainer.append(fermiCheckboxHTML);
+
+        const secondSphereCheckboxHTML = `
+    <div class="form-check mt-3">
+      <input type="checkbox" class="form-check-input" id="secondSphereCheckbox-${profileId}">
+      <label class="form-check-label" for="secondSphereCheckbox-${profileId}">
+        Second sphere
+      </label>
+    </div>
+    <div id="secondSphereParametersContainer-${profileId}"></div>`;
+        parametersContainer.append(secondSphereCheckboxHTML);
 
         const modelFreeCheckboxHTML = `
     <div class="form-check mt-3">
@@ -616,22 +621,121 @@ $(document).ready(function () {
           </span>
           <input type="text" class="form-control param-value" title="Hyperfine coupling constant. Unit: MHz" placeholder="Hyperfine coupling constant">
           <input type="text" class="form-control param-error" placeholder="Error" readonly>
-          <input type="text" class="form-control param-min" placeholder="min">
-          <input type="text" class="form-control param-max" placeholder="max">
+          <input type="text" class="form-control param-min" placeholder="min" value="0">
+          <input type="text" class="form-control param-max" placeholder="max" value="1.5">
         </div>
         <div class="form-check form-check-inline ms-1">
           <input class="form-check-input shared-checkbox" type="checkbox" id="${profileId}-Aoh-shared" data-param="Aoh">
           <label class="form-check-label" for="${profileId}-Aoh-shared">Shared</label>
         </div>
-        <select class="form-select ms-2 copy-Aoh-select narrow-select" data-param="Aoh" data-profile="${profileId}">
-          <option value="indie">indie</option>
-        </select>
       </div>`;
             container.html(aohHTML);
 
             if (typeof applySharedStateToProfile === 'function') applySharedStateToProfile(profileId);
             if (typeof applyFixFreeStateToProfile === 'function') applyFixFreeStateToProfile(profileId);
-            if (typeof updateSelectOptions === 'function') updateSelectOptions();
+        });
+
+        $(`#secondSphereCheckbox-${profileId}`).on('change', function () {
+            const isChecked = $(this).is(':checked');
+            const container = $(`#secondSphereParametersContainer-${profileId}`);
+
+            if (!__syncingSections) {
+                syncSectionAcrossTabs("secondSphere", isChecked);
+                return;
+            }
+
+            if (!isChecked) {
+                container.empty();
+                return;
+            }
+
+            container.html(`
+      <div class="parameter-input mb-3" data-param="q2">
+        <div class="input-group">
+          <span class="input-group-text">q<sub>2</sub></span>
+          <span class="input-group-text p-0 switch-cell">
+            <div class="form-check form-switch ms-2 me-2 my-1">
+              <input class="form-check-input fix-free-switch" type="checkbox" role="switch"
+                     id="switchQ2-${profileId}">
+              <label class="form-check-label ms-2" for="switchQ2-${profileId}">Fix</label>
+            </div>
+          </span>
+          <input type="text" class="form-control param-value" title="number of coordinated H2O (second sphere). q > 0" placeholder="nb. of H2O (second sphere)" value="1">
+          <input type="text" class="form-control param-error" placeholder="Error" readonly>
+          <input type="text" class="form-control param-min" placeholder="min">
+          <input type="text" class="form-control param-max" placeholder="max">
+        </div>
+        <div class="form-check form-check-inline ms-1">
+          <input class="form-check-input shared-checkbox" type="checkbox" id="${profileId}-q2-shared" data-param="q2">
+          <label class="form-check-label" for="${profileId}-q2-shared">Shared</label>
+        </div>
+      </div>
+
+      <div class="parameter-input mb-3" data-param="tm2">
+        <div class="input-group">
+          <span class="input-group-text">τ<sub>m2</sub><sup>298K</sup></span>
+          <span class="input-group-text p-0 switch-cell">
+            <div class="form-check form-switch ms-2 me-2 my-1">
+              <input class="form-check-input fix-free-switch" type="checkbox" role="switch"
+                     id="switchTm2-${profileId}" checked>
+              <label class="form-check-label ms-2" for="switchTm2-${profileId}">Free</label>
+            </div>
+          </span>
+          <input type="text" class="form-control param-value" title="Lifetime of the water molecule (second sphere) at 298K. Unit: s" placeholder="Lifetime of the water molecule (second sphere)" value="1e-8">
+          <input type="text" class="form-control param-error" placeholder="Error" readonly>
+          <input type="text" class="form-control param-min" placeholder="min" value="1e-11">
+          <input type="text" class="form-control param-max" placeholder="max" value="1e-6">
+        </div>
+      </div>
+
+      <div class="parameter-input mb-3" data-param="Em2">
+        <div class="input-group">
+          <span class="input-group-text">E<sub>m2</sub></span>
+          <span class="input-group-text p-0 switch-cell">
+            <div class="form-check form-switch ms-2 me-2 my-1">
+              <input class="form-check-input fix-free-switch" type="checkbox" role="switch"
+                     id="switchEm2-${profileId}" checked>
+              <label class="form-check-label ms-2" for="switchEm2-${profileId}">Free</label>
+            </div>
+          </span>
+          <input type="text" class="form-control param-value" title="Activation energy for τₘ₂; Unit:(J/mol)/R" placeholder="Activation energy for τₘ₂" value="2e3">
+          <input type="text" class="form-control param-error" placeholder="Error" readonly>
+          <input type="text" class="form-control param-min" placeholder="min" value="1e3">
+          <input type="text" class="form-control param-max" placeholder="max" value="1e4">
+        </div>
+      </div>
+
+      <div class="parameter-input mb-3" data-param="r2">
+        <div class="input-group">
+          <div class="input-group-text dropdown param-label-dropdown">
+            <button class="btn btn-sm btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+              r<sub>2</sub> [Å]
+            </button>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item active" href="#" data-unit="A">r<sub>2</sub> [Å]</a></li>
+              <li><a class="dropdown-item" href="#" data-unit="m">r<sub>2</sub> [m]</a></li>
+            </ul>
+          </div>
+          <span class="input-group-text p-0 switch-cell">
+            <div class="form-check form-switch ms-2 me-2 my-1">
+              <input class="form-check-input fix-free-switch" type="checkbox" role="switch"
+                     id="switchR2-${profileId}" checked>
+              <label class="form-check-label ms-2" for="switchR2-${profileId}">Free</label>
+            </div>
+          </span>
+          <input type="text" class="form-control param-value" title="Proton-Metal Distance (second sphere). Unit: m or Å" placeholder="Proton-Metal Distance (second sphere)" value="3">
+          <input type="text" class="form-control param-error" placeholder="Error" readonly>
+          <input type="text" class="form-control param-min" placeholder="min">
+          <input type="text" class="form-control param-max" placeholder="max">
+        </div>
+        <div class="form-check form-check-inline ms-1">
+          <input class="form-check-input shared-checkbox" type="checkbox" id="${profileId}-r2-shared" data-param="r2">
+          <label class="form-check-label" for="${profileId}-r2-shared">Shared</label>
+        </div>
+      </div>`);
+
+            applySharedStateToProfile(profileId);
+            applyFixFreeStateToProfile(profileId);
         });
 
         $(`#modelFreeCheckbox-${profileId}`).on('change', function () {
@@ -677,11 +781,7 @@ $(document).ready(function () {
         <input class="form-check-input shared-checkbox" type="checkbox" id="${profileId}-SLS-shared" data-param="SLS">
         <label class="form-check-label" for="${profileId}-SLS-shared">Shared</label>
       </div>
-          <select class="form-select ms-2 copy-SLS-select narrow-select" data-param="SLS" data-profile="${profileId}">
-            <option value="indie">indie</option>
-          </select>
       </div>
-
 
       <div class="parameter-input mb-3" data-param="tl">
         <div class="input-group">
@@ -720,20 +820,17 @@ $(document).ready(function () {
 
             if (typeof applySharedStateToProfile === 'function') applySharedStateToProfile(profileId);
             if (typeof applyFixFreeStateToProfile === 'function') applyFixFreeStateToProfile(profileId);
-            if (typeof updateSelectOptions === 'function') updateSelectOptions();
         });
 
         $(`#outerSphereCheckbox-${profileId}`).on('change', function () {
             const isChecked = $(this).is(':checked');
             const container = $(`#outerSphereParametersContainer-${profileId}`);
 
-            // User action → broadcast first, then exit.
             if (!__syncingSections) {
                 syncSectionAcrossTabs("outerSphere", isChecked);
                 return;
             }
 
-            // Sync pass → apply the DOM change locally.
             if (!isChecked) {
                 container.empty();
                 return;
@@ -772,10 +869,6 @@ $(document).ready(function () {
         <input class="form-check-input shared-checkbox" type="checkbox" id="${profileId}-D-shared" data-param="D">
         <label class="form-check-label" for="${profileId}-D-shared">Shared</label>
       </div>
-    
-      <select class="form-select ms-2 copy-D-select narrow-select" data-param="D" data-profile="${profileId}">
-        <option value="indie">indie</option>
-      </select>
     </div>
 
       <div class="parameter-input mb-3" data-param="a">
@@ -805,9 +898,6 @@ $(document).ready(function () {
           <input class="form-check-input shared-checkbox" type="checkbox" id="${profileId}-a-shared" data-param="a">
           <label class="form-check-label" for="${profileId}-a-shared">Shared</label>
         </div>
-        <select class="form-select ms-2 copy-a-select narrow-select" data-param="a" data-profile="${profileId}">
-          <option value="indie">indie</option>
-        </select>
       </div>
 
       <div class="parameter-input mb-3" data-param="fn">
@@ -829,19 +919,14 @@ $(document).ready(function () {
           <input class="form-check-input shared-checkbox" type="checkbox" id="${profileId}-fn-shared" data-param="fn">
           <label class="form-check-label" for="${profileId}-fn-shared">Shared</label>
         </div>
-        <select class="form-select ms-2 copy-fn-select narrow-select" data-param="fn" data-profile="${profileId}">
-          <option value="indie">indie</option>
-        </select>
       </div>`;
             container.html(outerSphereHTML);
 
             if (typeof applySharedStateToProfile === 'function') applySharedStateToProfile(profileId);
             if (typeof applyFixFreeStateToProfile === 'function') applyFixFreeStateToProfile(profileId);
-            if (typeof updateSelectOptions === 'function') updateSelectOptions();
             applyDmodeToProfile(profileId);
             // if (typeof StateOfProfile === 'function') StateOfProfile(profileId);
         });
-        updateSelectOptions();
     }
 
     $(document).on('change', '.fix-free-switch', function () {
@@ -863,6 +948,7 @@ $(document).ready(function () {
             if (isChecked) {
                 $staticLabel.show();
                 $dropdownLbl.hide();
+                if (DmodeState.D !== "X") syncDistreteD("X");
             } else {
                 $staticLabel.hide();
                 $dropdownLbl.show();
@@ -897,18 +983,12 @@ $(document).ready(function () {
             }
         });
 
-
-
     $(document).on('change', '.shared-checkbox', function () {
         const param = String($(this).data('param'));
         const isChecked = $(this).is(':checked');
 
-        // persist global state
         sharedState[param] = !!isChecked;
 
-
-
-        // reflect the same choice on all tabs for this param only
         $(`.shared-checkbox[data-param="${param}"]`).prop('checked', !!isChecked);
     });
 
@@ -948,28 +1028,6 @@ $(document).ready(function () {
         syncDistreteD(mode);
     });
 
-
-
-    function updateSelectOptions() {
-        const paramNames = ["q", "C", "rho", "ms", "S", "tm", "tR", "tv", "r", "Delta2", "Aoh", "SLS", "tl", "D", "a", "fn"];
-        paramNames.forEach(param => {
-
-            $(`[class*="copy-${param}-select"]`).each(function () {
-                const profileId = $(this).data('profile');
-                $(this).find('option:not([value="indie"])').remove();
-
-                for (let i = 1; i <= profileCount; i++) {
-                    const sourceProfile = `profile${i}`;
-                    if (sourceProfile !== profileId) {
-                        $(this).append(`<option value="copy${i}">copy from ${i}</option>`);
-                    }
-                }
-            });
-        });
-    }
-
-
-
     function updateTabSelectOptions() {
         const selectElement = $('#tab-select');
         selectElement.empty();
@@ -980,26 +1038,6 @@ $(document).ready(function () {
         });
     }
     window.updateTabSelectOptions = updateTabSelectOptions;
-
-    function copyParameterValue(fromProfile, toProfile, paramName) {
-        const fromInput = $(`#${fromProfile} .parameter-input[data-param="${paramName}"] .param-value`);
-        const toInput   = $(`#${toProfile} .parameter-input[data-param="${paramName}"] .param-value`);
-        if (fromInput.length && toInput.length) {
-            toInput.val(fromInput.val());
-        }
-    }
-
-    $(document).on('change', '.copy-q-select, .copy-C-select, .copy-rho-select, .copy-ms-select, .copy-S-select, .copy-tm-select, .copy-tR-select, .copy-tv-select, .copy-r-select, .copy-Delta2-select, .copy-Aoh-select, .copy-SLS-select, .copy-D-select, .copy-a-select, .copy-fn-select', function () {
-        const profileId     = $(this).data('profile');
-        const selectedValue = $(this).val();
-        const paramName     = $(this).data('param');
-
-        if (selectedValue && selectedValue.startsWith('copy')) {
-            const fromProfile = `profile${selectedValue.replace('copy', '')}`;
-            copyParameterValue(fromProfile, profileId, paramName);
-            $(this).val('indie'); // reset selection
-        }
-    });
 
     function getSharedParamName() {
         const list = $('.shared-checkbox:checked').map(function () {
@@ -1025,7 +1063,7 @@ $(document).ready(function () {
             const unit = $row.find('.param-label-dropdown .dropdown-item.active').data('unit');
             if (unit === "cm-1") v = v ? Math.pow(parseFloat(v) * TWO_PI_c, 2) : "";
             else v = v ? parseFloat(v) : "";
-        } else if (paramName === "r") {
+        } else if (paramName === "r" || paramName === "r2") {
             const unit = $row.find('.param-label-dropdown .dropdown-item.active').data('unit');
             if (unit === "A" || unit === "Å") v = v ? parseFloat(v) / angstrom : "";
             else v = v ? parseFloat(v) : "";
@@ -1049,6 +1087,7 @@ $(document).ready(function () {
         if (orig === 'tm')      label = 'tmref';
         else if (orig === 'tR') label = 'trref';
         else if (orig === 'tv') label = 'tvref';
+        else if (orig === 'tm2') label = 'tmref2';
         else if (orig === 'tl') label = 'tlref';
 
         let sharedSet;
@@ -1069,8 +1108,8 @@ $(document).ready(function () {
         const hasAnyShared = true;
 
         const isAlwaysShared = (
-            orig === 'tm' || orig === 'tR' || orig === 'tv' || orig === 'tl' ||
-            orig === 'Em' || orig === 'ER' || orig === 'Ev' || orig === 'El'
+            orig === 'tm' || orig === 'tR' || orig === 'tv' || orig === 'tl' || orig === 'tm2' ||
+            orig === 'Em' || orig === 'ER' || orig === 'Ev' || orig === 'El' || orig === 'Em2'
         );
 
 
@@ -1089,13 +1128,6 @@ $(document).ready(function () {
         return { effF: uiIsFree ? 'Free' : 'Fix', label };
     }
 
-
-
-
-
-
-
-
     function indexForParam(paramName, isFermiChecked, nextIndexCounter) {
         if (paramName === "Aoh") return 13;
         const i = nextIndexCounter.value;
@@ -1105,28 +1137,7 @@ $(document).ready(function () {
         return out;
     }
 
-
-
-    // $(document).on('change', '.copy-q-select, .copy-C-select, .copy-rho-select, .copy-ms-select, .copy-S-select, .copy-tm-select, .copy-tR-select, .copy-tv-select, .copy-r-select, .copy-Delta2-select, .copy-Aoh-select, .copy-SLS-select, .copy-tl-select, .copy-D-select, .copy-a-select, .copy-fn-select', function () {
-    //     const profileId = $(this).data('profile'); // Current profile ID from the dropdown's data attribute
-    //     const selectedOption = $(this).val(); // The selected dropdown option
-    //     const paramName = $(this).data('param'); // The parameter name (e.g., "Aoh", "D")
-    //
-    //     if (selectedOption.startsWith('copy')) {
-    //         const fromProfile = `profile${selectedOption.replace('copy', '')}`; // Extract the source profile ID
-    //
-    //         // Copy the parameter value from the source profile to the active profile
-    //         copyParameterValue(fromProfile, profileId, paramName);
-    //
-    //         // Reset the dropdown selection back to 'indie' after copying
-    //         $(this).val('indie');
-    //     }
-    // });
-
-
-
     createParameterFields('profile1');
-    updateSelectOptions();
 
     const sharedAccordion = `
   <div id="shared-accordion-wrapper" style="width:50%; margin-top:12px;">
@@ -1437,14 +1448,6 @@ $(document).ready(function () {
 
         $('.nav-tabs a:first').tab('show');
 
-        // Remove the deleted tab from all copy dropdowns
-        $(`.copy-q-select, .copy-C-select, .copy-rho-select, .copy-ms-select, .copy-S-select,
-        .copy-tm-select, .copy-tR-select, .copy-tv-select, .copy-r-select, .copy-Delta2-select,
-        .copy-Aoh-select, .copy-SLS-select, .copy-tl-select, .copy-D-select, .copy-a-select,
-        .copy-fn-select`).each(function () {
-            $(this).find(`option[value="copy${tabId}"]`).remove();
-        });
-
         updateTabSelectOptions(); // Update select options after removing tab
     });
 
@@ -1559,6 +1562,9 @@ $(document).ready(function () {
             return Promise.reject('No active tab');
         }
 
+        const $dSw = $(`#${profileId} .parameter-input[data-param="D"] .fix-free-switch`);
+        const isDdiscrete = DmodeState.D === "Y" && $dSw.length > 0 && !$dSw.is(':checked');
+
         function SharedRules_svante(data, profileId) {
             const sharedParamName = getSharedParamName();
             const isFermiChecked  = $(`#fermiContactTermCheckbox-${profileId}`).is(':checked');
@@ -1580,7 +1586,7 @@ $(document).ready(function () {
 
                 if (paramName === 'Aoh') return; // reserved at 13
 
-                if (paramName === "D" && DmodeState.D === "Y") return;
+                if (paramName === "D" && isDdiscrete) return;
 
                 const index = indexForParam(paramName, isFermiChecked, nextIdx);
 
@@ -1592,12 +1598,12 @@ $(document).ready(function () {
                 let min = convertValueByParam($row, paramName, minElement.val()   || "");
                 let max = convertValueByParam($row, paramName, maxElement.val()   || "");
 
-                // ----- ARRHENIUS INVALID PAIR -----
                 const arrPairs = {
                     tm: "Em",
                     tR: "ER",
                     tv: "Ev",
-                    tl: "El"
+                    tl: "El",
+                    tm2: "Em2"
                 };
 
                 if (arrPairs.hasOwnProperty(paramName)) {
@@ -1616,7 +1622,8 @@ $(document).ready(function () {
                             paramName === "tm" ? "tmref" :
                                 paramName === "tR" ? "trref" :
                                     paramName === "tv" ? "tvref" :
-                                        "tlref";
+                                        paramName === "tm2" ? "tmref2" :
+                                            "tlref";
 
                         data[`F${index}`]    = "Fix";
                         data[`Pval${index}`] = val;
@@ -1700,7 +1707,7 @@ $(document).ready(function () {
 
         // Collect D values per dataset (per tab)
         const Dvals = {};
-        if (DmodeState.D === "Y") {
+        if (isDdiscrete) {
             let idx = 1;
             $('.tab-pane').each(function () {
                 const pid = $(this).attr('id');   // e.g. "profile1"
@@ -1741,7 +1748,7 @@ $(document).ready(function () {
                     let header = `# DATA N= ${Tstr} ${counter}`;
 
                     // If D is discrete, append D value
-                    if (DmodeState.D === "Y") {
+                    if (isDdiscrete) {
                         const dval = Dvals[counter] || "";
                         header = `# DATA N= ${Tstr} ${counter} ${dval}`;
                     }
@@ -1769,6 +1776,7 @@ $(document).ready(function () {
         // Flags
         data["ModelFree"]   = isModelFreeChecked ? "true" : "false";
         data["OuterSphere"] = isOuterSphereChecked ? "true" : "false";
+        data["SecondSphere"] = $(`#secondSphereCheckbox-${profileId}`).is(':checked') ? "true" : "false";
 
         // Tabs info
         data.AllTabs  = getTabNamesInOrder_corr();
@@ -1791,7 +1799,7 @@ $(document).ready(function () {
         data[`Pmax${trefIdx}`] = '';
 
         // Remove D from parameters if discrete
-        if (DmodeState.D === "B" && Array.isArray(data.Parameters)) {
+        if (isDdiscrete && Array.isArray(data.Parameters)) {
             data.Parameters = data.Parameters.filter(label => label !== "D");
         }
 
@@ -1801,7 +1809,7 @@ $(document).ready(function () {
 
         data["FitType"] = "Individual";
 
-        data["Dmode_svante"] = DmodeState.D;
+        data["Dmode_svante"] = isDdiscrete ? "Y" : "X";
 
         // POST
         return $.ajax({
@@ -1955,6 +1963,7 @@ $(document).ready(function () {
                 if (paramName === 'tm')      label = 'tmref';
                 else if (paramName === 'tR') label = 'trref';
                 else if (paramName === 'tv') label = 'tvref';
+                else if (paramName === 'tm2') label = 'tmref2';
 
                 labelsByIndex[index] = label;
             });
@@ -1995,6 +2004,7 @@ $(document).ready(function () {
             // checkboxes
             data["ModelFree"]   = $(`#modelFreeCheckbox-${profileId}`).is(':checked') ? "true" : "false";
             data["OuterSphere"] = $(`#outerSphereCheckbox-${profileId}`).is(':checked') ? "true" : "false";
+            data["SecondSphere"] = $(`#secondSphereCheckbox-${profileId}`).is(':checked') ? "true" : "false";
 
             // Tags / SelectedDataSet via AllTabs/ActiveTab (used by HomeController for JSON)
             data.AllTabs   = getTabNamesInOrder_corr();
@@ -2019,7 +2029,6 @@ $(document).ready(function () {
 
 
     function missingInputToast(msg, type="info") {
-        // Bootstrap 5 example; adjust to your project
         const toastEl = document.getElementById("mainToast");
         if (!toastEl) { alert(msg); return; }
 
@@ -2031,9 +2040,6 @@ $(document).ready(function () {
         const toast = new bootstrap.Toast(toastEl);
         toast.show();
     }
-
-
-
 
 
     function renderSamePlotEverywhere(datasetsArr, curvesArr, mode ="fit") {
@@ -2065,7 +2071,6 @@ $(document).ready(function () {
             if (unitSel === "s2") {
                 return x * x;
             }
-            // UI in "sls" → show raw backend value
             return x;
         }
 
@@ -2081,8 +2086,7 @@ $(document).ready(function () {
                 : x;
         }
 
-        if (paramName === 'r' || paramName === 'a') {
-            // backend stores meters; UI Å shows m → Å
+        if (paramName === 'r' || paramName === 'a' || paramName === 'r2') {
             return (unit === 'A' || unit === 'Å')
                 ? x * angstrom
                 : x;
@@ -2093,9 +2097,9 @@ $(document).ready(function () {
         return x;
     }
 
-    // name mapping from fit JSON → UI data-param names
     const nameMap = {
         tmref: 'tm',
+        tmref2: 'tm2',
         tvref: 'tv',
         trref: 'tR',
         tlref: 'tl'
@@ -2306,7 +2310,6 @@ $(document).ready(function () {
         const activeTabId = $('#myTabContent .tab-pane.active').attr('id');
         if (!__corrLastFitJson) { alert('Run Fit first.'); return; }
 
-        // --- figure out active profile index (0-based) ---
         const tabIdx = Math.max(0, (parseInt((activeTabId || '').replace('profile',''), 10) || 1) - 1);
 
         // --- DATA POINTS for this tab only ---
@@ -2437,7 +2440,6 @@ $(document).ready(function () {
                 return n.toExponential(5).replace(/e\+?(-?\d+)/i, 'e$1');
             };
 
-            // --- physical constants (safe if globals aren't defined yet) ---
             const TWO_PI_C = (typeof TWO_PI_c !== 'undefined' ? TWO_PI_c : 2 * Math.PI * 2.99792458e10); // s^-1 per cm^-1
 
             function convForUi(paramName, raw, $row) {
@@ -2445,7 +2447,6 @@ $(document).ready(function () {
                 const x = Number(raw);
                 if (!Number.isFinite(x)) return '';
 
-                // SLS: backend stores sqrt(S²); UI in S² should show S²
                 if (paramName === "SLS") {
                     const unitSel = String(
                         $row.find('.param-label-dropdown .dropdown-item.active').data('unit') || 's2'
@@ -2462,15 +2463,13 @@ $(document).ready(function () {
                 );
 
                 if (paramName === 'Delta2') {
-                    // backend stores Δ² in s⁻²; UI cm⁻¹ shows √(Δ²)/(2πc)
                     const base = x < 0 ? 0 : x;
                     return unit === 'cm-1'
                         ? (Math.sqrt(base) / TWO_PI_c)
                         : x;
                 }
 
-                if (paramName === 'r' || paramName === 'a') {
-                    // backend stores meters; UI Å shows m → Å
+                if (paramName === 'r' || paramName === 'a' || paramName === 'r2') {
                     return (unit === 'A' || unit === 'Å')
                         ? x * angstrom
                         : x;
@@ -2484,6 +2483,7 @@ $(document).ready(function () {
             // name mapping from fit JSON → UI data-param names
             const nameMap = {
                 tmref: 'tm',
+                tmref2: 'tm2',
                 tvref: 'tv',
                 trref: 'tR',
                 tlref: 'tl'
