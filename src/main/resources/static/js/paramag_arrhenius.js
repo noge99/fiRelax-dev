@@ -935,6 +935,14 @@ $(document).ready(function () {
 
         labelElement.text(isChecked ? 'Free' : 'Fix');
 
+        if (!$(this).is(':checked')) {
+            const p = String($(this).closest('.parameter-input').data('param') || '');
+            if (p) {
+                sharedState[p] = false;
+                $(`.shared-checkbox[data-param="${p}"]`).prop('checked', false);
+            }
+        }
+
         if (__syncingFixFree) return;
 
         const $row = $(this).closest('.parameter-input');

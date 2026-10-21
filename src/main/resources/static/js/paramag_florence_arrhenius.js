@@ -792,6 +792,14 @@ $(document).ready(function () {
         const isChecked = $(this).is(':checked');
         $(this).next('label').text(isChecked ? 'Free' : 'Fix');
 
+        if (!$(this).is(':checked')) {
+            const p = String($(this).closest('.parameter-input').data('param') || '');
+            if (p) {
+                sharedState[p] = false;
+                $(`.shared-checkbox[data-param="${p}"]`).prop('checked', false);
+            }
+        }
+
         const $row  = $(this).closest('.parameter-input');
         const param = String($row.data('param') || '');
 
@@ -1169,6 +1177,10 @@ $(document).ready(function () {
 
         if (isDdiscrete) {
             ORDER.splice(ORDER.findIndex(s => s.label === "DDM"), 1);
+        }
+
+        if (isModelFreeChecked && !isOuterSphereChecked && !isSecondSphereChecked) {
+            ORDER.splice(ORDER.findIndex(s => s.label === "FN"), 1);
         }
 
         function getZfsClosedMap(pid) {
