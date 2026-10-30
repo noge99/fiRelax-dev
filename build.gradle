@@ -1,7 +1,7 @@
 plugins {
 	id 'java'
 	id 'war'
-	id 'org.springframework.boot' version '3.5.14'
+	id 'org.springframework.boot' version '4.1.2'
 	id 'io.spring.dependency-management' version '1.1.7'
 }
 
@@ -19,7 +19,7 @@ repositories {
 }
 
 ext {
-	set('springShellVersion', "3.4.2")
+	set('springShellVersion', "4.0.1")
 }
 
 dependencies {
@@ -29,8 +29,9 @@ dependencies {
 	implementation 'nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.shell:spring-shell-starter'
+	implementation 'com.fasterxml.jackson.core:jackson-databind'
 //	implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
-	providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
+	providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat-runtime'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.shell:spring-shell-starter-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'

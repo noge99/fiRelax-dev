@@ -1356,6 +1356,7 @@ $(document).ready(function () {
         data["ModelFree"]    = isModelFreeChecked ? "true" : "false";
         data["OuterSphere"]  = isOuterSphereChecked ? "true" : "false";
         data["SecondSphere"] = isSecondSphereChecked ? "true" : "false";
+        data["Delta2Unit"]   = String($(`#${profileId} .parameter-input[data-param="Delta2"] .param-label-dropdown .dropdown-item.active`).first().data('unit') || "cm-1");
         data["Dmode"]        = DmodeState.D;
         data["Variant"]      = FLORENCE_VARIANT;
         data["FitType"]      = "Individual";

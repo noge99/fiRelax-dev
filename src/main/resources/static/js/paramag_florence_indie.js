@@ -1097,6 +1097,7 @@ $(document).ready(function () {
 
             const isModelFreeChecked = $(`#modelFreeCheckbox-${profileId}`).is(':checked');
             data["ModelFree"] = isModelFreeChecked ? "true" : "false";
+            data["Delta2Unit"] = ($(`#${profileId} .parameter-input[data-param="Delta2"] .param-label-dropdown .dropdown-item.active`).data('unit') || "cm-1").toString();
 
             if (isModelFreeChecked) {
 
@@ -1419,6 +1420,7 @@ $(document).ready(function () {
 
             const isModelFreeChecked = $(`#modelFreeCheckbox-${profileId}`).is(':checked');
             data["ModelFree"] = isModelFreeChecked ? "true" : "false";
+            data["Delta2Unit"] = ($(`#${profileId} .parameter-input[data-param="Delta2"] .param-label-dropdown .dropdown-item.active`).data('unit') || "cm-1").toString();
 
             if (isModelFreeChecked) {
 

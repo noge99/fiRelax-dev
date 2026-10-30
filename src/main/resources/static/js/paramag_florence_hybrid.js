@@ -1283,6 +1283,7 @@ $(document).ready(function () {
         data["ModelFree"]    = isModelFreeChecked ? "true" : "false";
         data["OuterSphere"]  = isOuterSphereChecked ? "true" : "false";
         data["SecondSphere"] = isSecondSphereChecked ? "true" : "false";
+        data["Delta2Unit"]   = rowUnit($(`#${profileId} .parameter-input[data-param="Delta2"]`).first()) || "cm-1";
         data["Dmode"]        = isDdiscrete ? "Y" : "X";
         data["Variant"]      = FLORENCE_VARIANT;
         data["FitType"]      = "Individual";
